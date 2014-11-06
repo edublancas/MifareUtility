@@ -27,6 +27,13 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text='Se usará la llave seleccionada en "Auth"'
+                android:id="@+id/textView12" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="Seleccione un sector"
                 android:id="@+id/textView11" />
@@ -36,39 +43,26 @@
                 android:layout_height="wrap_content"
                 android:inputType="number"
                 android:ems="10"
-                android:id="@+id/editText7" />
+                android:id="@+id/editTextAccessSector" />
 
-            <TextView
+            <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="Seleccione una llave"
-                android:id="@+id/textView12" />
+                android:text="Leer accesos"
+                android:id="@+id/readAccessButton"
+                android:layout_gravity="center_horizontal" />
 
-            <RadioGroup
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-
-                <RadioButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Llave A"
-                    android:id="@+id/radioButton"
-                    android:checked="true" />
-
-
-                <RadioButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Llave B"
-                    android:id="@+id/radioButton2"
-                    android:checked="false" />
-            </RadioGroup>
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Escribir accesos"
+                android:id="@+id/writeAccessButton"
+                android:layout_gravity="center_horizontal" />
 
             <Space
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.20" />
+                android:layout_weight="0.40" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -121,6 +115,17 @@
                 android:inputType="textCapCharacters|text|textNoSuggestions"
              />
 
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/activity_vertical_margin" />
+
+            <TextView
+                android:layout_width="397dp"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Deje cualquier campo en blanco para dejarlo igual"
+                android:id="@+id/textView17" />
+
         </LinearLayout>
 
         <LinearLayout
@@ -133,10 +138,18 @@
 
 
             <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text='Se usará la llave seleccionada en "Auth"'
+                android:id="@+id/textView5"
+                android:layout_weight="0.03" />
+
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="Medium Text"
+                android:text="Sector"
                 android:id="@+id/textView8"
                 android:layout_weight="0.03" />
 
@@ -145,14 +158,14 @@
                 android:layout_height="wrap_content"
                 android:inputType="number"
                 android:ems="10"
-                android:id="@+id/editText5"
+                android:id="@+id/editTextIOSector"
                 android:layout_weight="0.03" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="Medium Text"
+                android:text="Bloque"
                 android:id="@+id/textView9"
                 android:layout_weight="0.03" />
 
@@ -161,42 +174,39 @@
                 android:layout_height="wrap_content"
                 android:inputType="number"
                 android:ems="10"
-                android:id="@+id/editText6"
+                android:id="@+id/editTextBlock"
                 android:layout_weight="0.03" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Leer"
+                android:id="@+id/readButton"
+                android:layout_weight="0.03" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Escribir"
+                android:id="@+id/writeButton"
+                android:layout_weight="0.03"
+                android:layout_gravity="center_horizontal" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="@string/selectKeyLabel"
-                android:id="@+id/textView5"
-                android:textIsSelectable="false"
+                android:text="Resultado"
+                android:id="@+id/textView10"
+                android:layout_gravity="center_horizontal"
                 android:layout_weight="0.03" />
 
-            <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-                <RadioButton android:id="@+id/radio_pirates"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/keyA"
-                    android:onClick="onRadioButtonClicked"
-                    android:checked="true" />
-                <RadioButton android:id="@+id/radio_ninjas"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/keyB"
-                    android:onClick="onRadioButtonClicked"
-                    android:checked="false" />
-            </RadioGroup>
-
-            <TextView
+            <EditText
                 android:layout_width="match_parent"
-                android:layout_height="101dp"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="El valor leído es: ABC"
-                android:id="@+id/textView10" />
+                android:layout_height="wrap_content"
+                android:id="@+id/editText2"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="0.03" />
 
         </LinearLayout>
 
@@ -209,25 +219,6 @@
             android:weightSum="1">
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="@string/sectorauth_label"
-                android:id="@+id/textView7" />
-
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="number"
-                android:ems="10"
-                android:id="@+id/editText4" />
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/activity_vertical_margin"
-                android:layout_weight="0.10" />
-
-            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:textAppearance="?android:attr/textAppearanceMedium"
@@ -238,19 +229,8 @@
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:id="@+id/editText2"
+                android:id="@+id/editTextKeyA"
                 android:layout_weight="0.16" />
-
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Auth with Key A"
-                android:id="@+id/button" />
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/activity_vertical_margin"
-                android:layout_weight="0.10" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -262,31 +242,68 @@
 
             <EditText
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:ems="10"
+                android:id="@+id/editTextKeyB" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/activity_vertical_margin"
+                android:layout_weight="0.10" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/sectorauth_label"
+                android:id="@+id/textView7" />
+
+            <EditText
+                android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:id="@+id/editText3"
-                android:layout_gravity="center_horizontal"
+                android:id="@+id/editTextAuthSector"
                 android:layout_weight="0.16" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/activity_vertical_margin"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="0.04" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Seleccione una llave"
+                android:id="@+id/textView18"
+                android:layout_gravity="center_horizontal" />
+
+            <RadioGroup
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/keySelectorRadioGroup">
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Llave A"
+                    android:id="@+id/radioButton3"
+                    android:checked="false" />
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Llave B"
+                    android:id="@+id/radioButton4"
+                    android:checked="false" />
+            </RadioGroup>
 
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Auth with Key B"
-                android:id="@+id/button3" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="fill_parent"
-            android:id="@+id/tab3"
-            android:orientation="vertical"
-            android:paddingTop="60dp"
-            >
-            <TextView
-                android:layout_width="fill_parent"
-                android:layout_height="100dp"
-                android:text="This is tab 3"
-                android:id="@+id/txt3"
-                />
+                android:text="Autenticar"
+                android:id="@+id/authWithSelectedKey" />
 
         </LinearLayout>
 

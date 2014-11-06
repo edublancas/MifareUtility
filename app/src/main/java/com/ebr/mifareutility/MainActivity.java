@@ -44,7 +44,11 @@ public class MainActivity extends Activity {
     EditText mCardType;
     EditText mHexKeyA;
     EditText mHexKeyB;
-    EditText mSector;
+
+    EditText mAuthSector;
+    EditText mIOSector;
+    EditText mAccessSector;
+
     EditText mBloque;
     EditText mDataBloque;
     EditText mDatatoWrite;
@@ -65,11 +69,7 @@ public class MainActivity extends Activity {
 
         TabHost.TabSpec spec2=tabHost.newTabSpec("T2");
         spec2.setContent(R.id.tab2);
-        spec2.setIndicator("Read");
-
-        TabHost.TabSpec spec3=tabHost.newTabSpec("T3");
-        spec3.setContent(R.id.tab3);
-        spec3.setIndicator("Write");
+        spec2.setIndicator("Read/Write");
 
         TabHost.TabSpec spec4=tabHost.newTabSpec("T4");
         spec4.setContent(R.id.tab4);
@@ -77,24 +77,35 @@ public class MainActivity extends Activity {
 
         tabHost.addTab(spec1);
         tabHost.addTab(spec2);
-        tabHost.addTab(spec3);
         tabHost.addTab(spec4);
 
         /*
         mTagUID = ((EditText) findViewById(R.id.tag_uid));
         mCardType = ((EditText) findViewById(R.id.cardtype));
-        mHexKeyA = ((EditText) findViewById(R.id.editTextKeyA));
-        mHexKeyB = ((EditText) findViewById(R.id.editTextKeyB));
-        mSector = ((EditText) findViewById(R.id.editTextSector));
-        mBloque = ((EditText) findViewById(R.id.editTextBloque));
         mDataBloque = ((EditText) findViewById(R.id.editTextBloqueLeido));
         mDatatoWrite = ((EditText) findViewById(R.id.editTextBloqueAEscribir));
-        mRadioGroup = ((RadioGroup) findViewById(R.id.rBtnGrp));
 
-        findViewById(R.id.buttonauthenticate).setOnClickListener(mTagAuthenticate);
-        findViewById(R.id.buttonLeerbloque).setOnClickListener(mTagRead);
-        findViewById(R.id.buttonEscribirBloque).setOnClickListener(mTagWrite);
         */
+
+        //Keys used fot all operations
+        mHexKeyA = ((EditText) findViewById(R.id.editTextKeyA));
+        mHexKeyB = ((EditText) findViewById(R.id.editTextKeyB));
+
+        //Sector is needed on the three tabs
+        mAuthSector = ((EditText) findViewById(R.id.editTextAuthSector));
+        mIOSector = ((EditText) findViewById(R.id.editTextIOSector));
+        mAccessSector = ((EditText) findViewById(R.id.editTextAccessSector));
+
+        mBloque = ((EditText) findViewById(R.id.editTextBlock));
+        mRadioGroup = ((RadioGroup) findViewById(R.id.keySelectorRadioGroup));
+
+
+        //Click listeners for auth, read and write
+        findViewById(R.id.authWithSelectedKey).setOnClickListener(mTagAuthenticate);
+        findViewById(R.id.readButton).setOnClickListener(mTagRead);
+        findViewById(R.id.writeButton).setOnClickListener(mTagWrite);
+
+
         //Get a reference to the NFC adapter
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
 
@@ -147,6 +158,7 @@ public class MainActivity extends Activity {
     }
 
 
+    //Read intent
     void resolveReadIntent(Intent intent) {
         String action = intent.getAction();
         if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)) {
@@ -258,6 +270,7 @@ public class MainActivity extends Activity {
     }
 
 
+    //Write intent
     void resolveWriteIntent(Intent intent) {
         String action = intent.getAction();
         if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)) {
@@ -322,7 +335,7 @@ public class MainActivity extends Activity {
         }
     }
 
-
+    //Auth intent
     void resolveAuthIntent(Intent intent) {
         String action = intent.getAction();
         if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)) {
@@ -334,7 +347,7 @@ public class MainActivity extends Activity {
                 boolean auth = false;
                 String hexkey = "";
                 int id = mRadioGroup.getCheckedRadioButtonId();
-                int sector = Integer.valueOf(mSector.getText().toString());
+                int sector = Integer.valueOf(mAuthSector.getText().toString());
                 byte[] datakey;
 /*
                 if (id == R.id.radioButtonKeyA){
@@ -461,6 +474,7 @@ public class MainActivity extends Activity {
         public void onClick(View arg0)
         {
 
+            //Set auth flag to true
             enableTagAuthMode();
 
             AlertDialog.Builder builder = new AlertDialog.Builder(
