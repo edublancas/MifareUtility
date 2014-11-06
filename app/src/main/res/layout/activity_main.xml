@@ -1,202 +1,295 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/LinearLayout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".MainActivity" >
+<?xml version="1.0" encoding="utf-8"?>
 
-    <TextView
-        android:id="@+id/text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/instrucciones"
-        android:textStyle="bold" />
-
-    <LinearLayout
+<TabHost android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:id="@+id/tabHost"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+    <TabWidget
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal" >
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/tag_UID" />
-
-        <EditText
-            android:id="@+id/tag_uid"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:focusable="false"
-            android:inputType="text" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/card_type" />
-
-        <EditText
-            android:id="@+id/cardtype"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:focusable="false"
-            android:inputType="text" />
-
-    </LinearLayout>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/autenticate_label"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/keyA_label" />
-
-        <EditText
-            android:id="@+id/editTextKeyA"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:inputType="text" />
-
-    </LinearLayout>
-
-    <LinearLayout
+        android:id="@android:id/tabs"
+        />
+    <FrameLayout
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="fill_parent"
+        android:id="@android:id/tabcontent"
+        >
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/keyB_label" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/tab4"
+            android:orientation="vertical"
+            android:paddingTop="60dp"
+            android:weightSum="1">
 
-        <EditText
-            android:id="@+id/editTextKeyB"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:inputType="text" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Seleccione un sector"
+                android:id="@+id/textView11" />
 
-    </LinearLayout>
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:ems="10"
+                android:id="@+id/editText7" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Seleccione una llave"
+                android:id="@+id/textView12" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/sectorauth_label" />
+            <RadioGroup
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
 
-        <EditText
-            android:id="@+id/editTextSector"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:inputType="number" />
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Llave A"
+                    android:id="@+id/radioButton"
+                    android:checked="true" />
 
-    </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Llave B"
+                    android:id="@+id/radioButton2"
+                    android:checked="false" />
+            </RadioGroup>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/sel_llave_label" />
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.20" />
 
-        <RadioGroup
-            android:id="@+id/rBtnGrp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal" >
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Introduzca la nueva llave A"
+                android:id="@+id/textView13"
 
-            <RadioButton
-                android:id="@+id/radioButtonkeyA"
+             />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/editText8"
+                android:digits="0123456789ABCDEF"
+                android:hint="@string/hex_string"
+                android:imeOptions="actionDone"
+                android:inputType="textCapCharacters|text|textNoSuggestions"
+            />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Introduzca bits de acceso"
+                android:id="@+id/textView16" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:ems="10"
+                android:id="@+id/editText10" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Introduzca la nueva llave B"
+                android:id="@+id/textView15"
+                android:layout_gravity="center_horizontal" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/editText9"
+                android:digits="0123456789ABCDEF"
+                android:hint="@string/hex_string"
+                android:imeOptions="actionDone"
+                android:inputType="textCapCharacters|text|textNoSuggestions"
+             />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/tab2"
+            android:orientation="vertical"
+            android:paddingTop="60dp"
+            android:weightSum="1">
+
+
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/keyA" />
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Medium Text"
+                android:id="@+id/textView8"
+                android:layout_weight="0.03" />
 
-            <RadioButton
-                android:id="@+id/radioButtonkeyB"
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:ems="10"
+                android:id="@+id/editText5"
+                android:layout_weight="0.03" />
+
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/keyB" />
-        </RadioGroup>
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Medium Text"
+                android:id="@+id/textView9"
+                android:layout_weight="0.03" />
 
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:ems="10"
+                android:id="@+id/editText6"
+                android:layout_weight="0.03" />
 
-    </LinearLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/selectKeyLabel"
+                android:id="@+id/textView5"
+                android:textIsSelectable="false"
+                android:layout_weight="0.03" />
 
-    <Button
-        android:id="@+id/buttonauthenticate"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/authenticatebutton" />
+            <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <RadioButton android:id="@+id/radio_pirates"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/keyA"
+                    android:onClick="onRadioButtonClicked"
+                    android:checked="true" />
+                <RadioButton android:id="@+id/radio_ninjas"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/keyB"
+                    android:onClick="onRadioButtonClicked"
+                    android:checked="false" />
+            </RadioGroup>
 
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="101dp"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="El valor leído es: ABC"
+                android:id="@+id/textView10" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/select_block_label" />
+        </LinearLayout>
 
-        <EditText
-            android:id="@+id/editTextBloque"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:inputType="number" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/tab1"
+            android:orientation="vertical"
+            android:paddingTop="60dp"
+            android:weightSum="1">
 
-    </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/sectorauth_label"
+                android:id="@+id/textView7" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal" >
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:ems="10"
+                android:id="@+id/editText4" />
 
-        <Button
-            android:id="@+id/buttonLeerbloque"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/leer_bloque_button" />
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/activity_vertical_margin"
+                android:layout_weight="0.10" />
 
-        <EditText
-            android:id="@+id/editTextBloqueLeido"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:focusable="false"
-            android:inputType="text" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/keyA_label"
+                android:id="@+id/keyALabel"
+                android:layout_weight="0.07" />
 
-    </LinearLayout>
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:id="@+id/editText2"
+                android:layout_weight="0.16" />
 
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Auth with Key A"
+                android:id="@+id/button" />
 
-        <Button
-            android:id="@+id/buttonEscribirBloque"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/escribir_bloque_button" />
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/activity_vertical_margin"
+                android:layout_weight="0.10" />
 
-        <EditText
-            android:id="@+id/editTextBloqueAEscribir"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:inputType="text" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/keyB_label"
+                android:id="@+id/textView4"
+                android:layout_weight="0.07" />
 
-    </LinearLayout>
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:id="@+id/editText3"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="0.16" />
 
-</LinearLayout>
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Auth with Key B"
+                android:id="@+id/button3" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/tab3"
+            android:orientation="vertical"
+            android:paddingTop="60dp"
+            >
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="100dp"
+                android:text="This is tab 3"
+                android:id="@+id/txt3"
+                />
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+</TabHost>

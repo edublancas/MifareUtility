@@ -27,5 +27,8 @@
     <string name="ready_to_read_instructions">Acerque su dispositivo Android a un tag Mifare para leer la información del bloque seleccionado.</string>
     <string name="menu_about">Acerca de Mifare Control</string>
     <string name="menu_help">Ayuda</string>
+    <string name="keyALabel">Introduzca la clave A</string>
+    <string name="selectKeyLabel">Seleccione una llave para efectuar la operación</string>
+    <string name="hex_string">"123456789ABCDEF"</string>
 
 </resources>

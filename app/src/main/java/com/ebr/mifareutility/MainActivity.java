@@ -21,6 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RadioGroup;
+import android.widget.TabHost;
 import android.widget.Toast;
 
 
@@ -54,6 +55,32 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        TabHost tabHost=(TabHost)findViewById(R.id.tabHost);
+        tabHost.setup();
+
+        TabHost.TabSpec spec1=tabHost.newTabSpec("T1");
+        spec1.setContent(R.id.tab1);
+        spec1.setIndicator("Auth");
+
+        TabHost.TabSpec spec2=tabHost.newTabSpec("T2");
+        spec2.setContent(R.id.tab2);
+        spec2.setIndicator("Read");
+
+        TabHost.TabSpec spec3=tabHost.newTabSpec("T3");
+        spec3.setContent(R.id.tab3);
+        spec3.setIndicator("Write");
+
+        TabHost.TabSpec spec4=tabHost.newTabSpec("T4");
+        spec4.setContent(R.id.tab4);
+        spec4.setIndicator("Access");
+
+        tabHost.addTab(spec1);
+        tabHost.addTab(spec2);
+        tabHost.addTab(spec3);
+        tabHost.addTab(spec4);
+
+        /*
         mTagUID = ((EditText) findViewById(R.id.tag_uid));
         mCardType = ((EditText) findViewById(R.id.cardtype));
         mHexKeyA = ((EditText) findViewById(R.id.editTextKeyA));
@@ -67,12 +94,11 @@ public class MainActivity extends Activity {
         findViewById(R.id.buttonauthenticate).setOnClickListener(mTagAuthenticate);
         findViewById(R.id.buttonLeerbloque).setOnClickListener(mTagRead);
         findViewById(R.id.buttonEscribirBloque).setOnClickListener(mTagWrite);
-
-
+        */
+        //Get a reference to the NFC adapter
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
 
-        // if null is returned this demo cannot run. Use this check if the
-        // "required" parameter of <uses-feature> in the manifest is not set
+        // if null, this is not a NFC powered device
         if (mNfcAdapter == null)
         {
             Toast.makeText(this,
@@ -81,9 +107,9 @@ public class MainActivity extends Activity {
             finish();
             return;
         }
-
-        // check if NFC is enabled
+        // check if NFC is enabled, if not, open settings to activate
         checkNfcEnabled();
+
 
         // Handle foreground NFC scanning in this activity by creating a
         // PendingIntent with FLAG_ACTIVITY_SINGLE_TOP flag so each new scan
@@ -95,8 +121,9 @@ public class MainActivity extends Activity {
         // application when in "read mode":
         IntentFilter mifareDetected = new IntentFilter(NfcAdapter.ACTION_TECH_DISCOVERED);
 
+        //Add our custom MIME type
         try {
-            mifareDetected.addDataType("application/com.itecstraining.mifarecontrol");
+            mifareDetected.addDataType("application/com.ebr.mifareutility");
         } catch (MalformedMimeTypeException e)
         {
             throw new RuntimeException("No se pudo añadir un tipo MIME.", e);
@@ -172,12 +199,14 @@ public class MainActivity extends Activity {
                     int sector = mfc.blockToSector(Integer.valueOf(mBloque.getText().toString()));
                     byte[] datakey;
 
-                    if (id == R.id.radioButtonkeyA){
+                    /*
+
+                    if (id == R.id.radioButtonKeyA){
                         hexkey = mHexKeyA.getText().toString();
                         datakey = hexStringToByteArray(hexkey);
                         auth = mfc.authenticateSectorWithKeyA(sector, datakey);
                     }
-                    else if (id == R.id.radioButtonkeyB){
+                    else if (id == R.id.radioButtonKeyB){
                         hexkey = mHexKeyB.getText().toString();
                         datakey = hexStringToByteArray(hexkey);
                         auth = mfc.authenticateSectorWithKeyB(sector, datakey);
@@ -191,6 +220,8 @@ public class MainActivity extends Activity {
                         return;
                     }
 
+
+                    */
                     if(auth){
                         int bloque = Integer.valueOf(mBloque.getText().toString());
                         byte[] dataread = mfc.readBlock(bloque);
@@ -242,12 +273,14 @@ public class MainActivity extends Activity {
                 int sector = mfc.blockToSector(bloque);
                 byte[] datakey;
 
-                if (id == R.id.radioButtonkeyA){
+                /*
+
+                if (id == R.id.radioButtonKeyA){
                     hexkey = mHexKeyA.getText().toString();
                     datakey = hexStringToByteArray(hexkey);
                     auth = mfc.authenticateSectorWithKeyA(sector, datakey);
                 }
-                else if (id == R.id.radioButtonkeyB){
+                else if (id == R.id.radioButtonKeyB){
                     hexkey = mHexKeyB.getText().toString();
                     datakey = hexStringToByteArray(hexkey);
                     auth = mfc.authenticateSectorWithKeyB(sector, datakey);
@@ -260,6 +293,8 @@ public class MainActivity extends Activity {
                     mfc.close();
                     return;
                 }
+
+                */
 
                 if(auth){
                     String strdata = mDatatoWrite.getText().toString();
@@ -301,13 +336,13 @@ public class MainActivity extends Activity {
                 int id = mRadioGroup.getCheckedRadioButtonId();
                 int sector = Integer.valueOf(mSector.getText().toString());
                 byte[] datakey;
-
-                if (id == R.id.radioButtonkeyA){
+/*
+                if (id == R.id.radioButtonKeyA){
                     hexkey = mHexKeyA.getText().toString();
                     datakey = hexStringToByteArray(hexkey);
                     auth = mfc.authenticateSectorWithKeyA(sector, datakey);
                 }
-                else if (id == R.id.radioButtonkeyB){
+                else if (id == R.id.radioButtonKeyB){
                     hexkey = mHexKeyB.getText().toString();
                     datakey = hexStringToByteArray(hexkey);
                     auth = mfc.authenticateSectorWithKeyB(sector, datakey);
@@ -320,7 +355,7 @@ public class MainActivity extends Activity {
                     mfc.close();
                     return;
                 }
-
+*/
                 if(auth){
                     Toast.makeText(this,
                             "Autentificación de sector EXITOSA.",
