@@ -24,7 +24,6 @@ import android.widget.RadioGroup;
 import android.widget.TabHost;
 import android.widget.Toast;
 
-
 public class MainActivity extends Activity {
 
 
@@ -56,6 +55,16 @@ public class MainActivity extends Activity {
     EditText mAccessKeyA;
     EditText mAccessKeyB;
     EditText mAccessBits;
+
+
+    //Enum type for modes
+    public enum Mode {
+        INFOMODE,
+        AUTHMODE,
+        READMODE,
+        WRITEMODE,
+        ACCESSMODE
+    }
 
 
     EditText mTagUID;
@@ -311,6 +320,7 @@ public class MainActivity extends Activity {
                             enableTagReadMode();
                         }
                     });
+
             mTagDialog = builder.create();
             mTagDialog.show();
         }
@@ -341,6 +351,7 @@ public class MainActivity extends Activity {
         FLAG SETTERS
      */
 
+    //This mode lets the user know general information about the tag
     private void enableTagWriteMode()
     {
         mWriteMode = true;
@@ -355,6 +366,7 @@ public class MainActivity extends Activity {
                 mReadWriteTagFilters, mTechList);
     }
 
+    //This mode lets the user authenticate sectors on a tag
     private void enableTagAuthMode()
     {
         mAuthenticationMode = true;
