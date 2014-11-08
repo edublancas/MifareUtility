@@ -2,6 +2,8 @@ package com.ebr.mifareutility;
 
 
 import java.io.IOException;
+import java.util.Arrays;
+
 import android.nfc.NfcAdapter;
 import android.nfc.tech.MifareClassic;
 import android.nfc.Tag;
@@ -38,7 +40,8 @@ public class MainActivity extends Activity {
         AUTHMODE,
         READMODE,
         WRITEMODE,
-        ACCESSMODE
+        READACCESSMODE,
+        WRITEACCESSMODE
     }
 
     //Mode variable
@@ -72,9 +75,6 @@ public class MainActivity extends Activity {
 
     EditText mTagUID;
     EditText mCardType;
-    EditText mBloque;
-    EditText mDataBloque;
-    EditText mDatatoWrite;
 
 
     @Override
@@ -134,9 +134,6 @@ public class MainActivity extends Activity {
         /*
         mTagUID = ((EditText) findViewById(R.id.tag_uid));
         mCardType = ((EditText) findViewById(R.id.cardtype));
-        mDataBloque = ((EditText) findViewById(R.id.editTextBloqueLeido));
-        mDatatoWrite = ((EditText) findViewById(R.id.editTextBloqueAEscribir));
-        mBloque = ((EditText) findViewById(R.id.editTextBlock));
         */
 
 
@@ -336,6 +333,7 @@ public class MainActivity extends Activity {
         @Override
         public void onClick(View arg0)
         {
+            currentMode = Mode.READACCESSMODE;
 
         }
     };
@@ -346,6 +344,7 @@ public class MainActivity extends Activity {
         @Override
         public void onClick(View arg0)
         {
+            currentMode = Mode.WRITEACCESSMODE;
 
         }
     };
@@ -468,7 +467,7 @@ public class MainActivity extends Activity {
                     String hexkey = "";
                     int selectedRadioButton = mAuthRadioGroup.getCheckedRadioButtonId();
 
-                    int sector = mfc.blockToSector(Integer.valueOf(mBloque.getText().toString()));
+                    int sector = mfc.blockToSector(Integer.valueOf(mIOBlock.getText().toString()));
                     byte[] datakey;
 
 
@@ -486,34 +485,20 @@ public class MainActivity extends Activity {
 
                     if(auth){
                         //Get block to read
-                        int bloque = Integer.valueOf(mBloque.getText().toString());
+                        int bloque = Integer.valueOf(mIOBlock.getText().toString());
                         //Read block from tag
                         byte[] dataread = mfc.readBlock(bloque);
+
                         //Convert block into string
                         String blockread = HexStringUtils.getHexString(dataread, dataread.length);
                         //Update UI with read data
                         mIOResult.setText(blockread);
 
                         Log.i(TAG, "Bloque Leido: " + blockread);
-
-                        /*
-                        Editable BlockField = mDataBloque.getText();
-                        BlockField.clear();
-                        BlockField.append(blockread);
-                        */
-
-
-                        Toast.makeText(this,
-                                "Lectura de bloque EXITOSA.",
-                                Toast.LENGTH_LONG).show();
-
+                        Toast.makeText(this,"Lectura de bloque EXITOSA.", Toast.LENGTH_LONG).show();
 
                     }else{ // Authentication failed - Handle it
-                        Editable BlockField = mDataBloque.getText();
-                        BlockField.clear();
-                        Toast.makeText(this,
-                                "Lectura de bloque FALLIDA dado autentificación fallida.",
-                                Toast.LENGTH_LONG).show();
+                        Toast.makeText(this,"Lectura de bloque FALLIDA dado autentificación fallida.",Toast.LENGTH_LONG).show();
                     }
 
                     mfc.close();
@@ -540,7 +525,7 @@ public class MainActivity extends Activity {
                 boolean auth;
                 String hexkey = "";
                 int id = mAuthRadioGroup.getCheckedRadioButtonId();
-                int bloque = Integer.valueOf(mBloque.getText().toString());
+                int bloque = Integer.valueOf(mIOBlock.getText().toString());
                 int sector = mfc.blockToSector(bloque);
                 byte[] datakey;
 
@@ -569,15 +554,11 @@ public class MainActivity extends Activity {
                     //Write block
                     mfc.writeBlock(bloque, datatowrite);
 
-                    Toast.makeText(this,
-                            "Escritura a bloque EXITOSA.",
-                            Toast.LENGTH_LONG).show();
+                    Toast.makeText(this,"Escritura a bloque EXITOSA.",Toast.LENGTH_LONG).show();
 
 
                 }else{ // Authentication failed - Handle it
-                    Toast.makeText(this,
-                            "Escritura a bloque FALLIDA dado autentificación fallida.",
-                            Toast.LENGTH_LONG).show();
+                    Toast.makeText(this,"Escritura a bloque FALLIDA dado autentificación fallida.",Toast.LENGTH_LONG).show();
                 }
 
                 mfc.close();
@@ -610,28 +591,17 @@ public class MainActivity extends Activity {
                     datakey = HexStringUtils.hexStringToByteArray(hexkey);
                     auth = mfc.authenticateSectorWithKeyA(sector, datakey);
                 }
-                else if (id == R.id.radioButtonKeyB){
+                else{
                     hexkey = mAuthKeyB.getText().toString();
                     datakey = HexStringUtils.hexStringToByteArray(hexkey);
                     auth = mfc.authenticateSectorWithKeyB(sector, datakey);
                 }
-                else {
-                    //no item selected poner toast
-                    Toast.makeText(this,
-                            "°Seleccionar llave A o B!",
-                            Toast.LENGTH_LONG).show();
-                    mfc.close();
-                    return;
-                }
+
 
                 if(auth){
-                    Toast.makeText(this,
-                            "Autentificación de sector EXITOSA.",
-                            Toast.LENGTH_LONG).show();
+                    Toast.makeText(this,"Autentificación de sector EXITOSA.",Toast.LENGTH_LONG).show();
                 }else{ // Authentication failed - Handle it
-                    Toast.makeText(this,
-                            "Autentificación de sector FALLIDA.",
-                            Toast.LENGTH_LONG).show();
+                    Toast.makeText(this,"Autentificación de sector FALLIDA.",Toast.LENGTH_LONG).show();
                 }
                 mfc.close();
             }catch (IOException e) {
@@ -683,9 +653,7 @@ public class MainActivity extends Activity {
 
 
                 }else{ // Authentication failed - Handle it
-                    Toast.makeText(this,
-                            "Escritura a bloque de acceso FALLIDA dado autentificación fallida.",
-                            Toast.LENGTH_LONG).show();
+                    Toast.makeText(this,"Escritura a bloque de acceso FALLIDA dado autentificación fallida.",Toast.LENGTH_LONG).show();
                 }
 
                 mfc.close();
@@ -711,7 +679,7 @@ void resolveReadAccessIntent(Intent intent) {
             String hexkey = "";
             int selectedRadioButton = mAuthRadioGroup.getCheckedRadioButtonId();
 
-            int sector = mfc.blockToSector(Integer.valueOf(mBloque.getText().toString()));
+            int sector = mfc.blockToSector(Integer.valueOf(mIOBlock.getText().toString()));
             byte[] datakey;
 
 
@@ -729,34 +697,29 @@ void resolveReadAccessIntent(Intent intent) {
 
             if(auth){
                 //Get block to read
-                int bloque = Integer.valueOf(mBloque.getText().toString());
+                int bloque = Integer.valueOf(mIOBlock.getText().toString());
                 //Read block from tag
                 byte[] dataread = mfc.readBlock(bloque);
-                //Convert block into string
-                String blockread = HexStringUtils.getHexString(dataread, dataread.length);
+                //Split byte array into KeyA, access bits and KeyB
+                byte[] keyABits = Arrays.copyOfRange(dataread, 0, 6);// Key A goes from 0 to 5
+                byte[] accessBits = Arrays.copyOfRange(dataread, 6, 10); // Access bits go from 6 to 9
+                byte[] keyBBits = Arrays.copyOfRange(dataread, 10, dataread.length);// Key B goes from 10 15
+                //Convert bits into strings
+                String keyA = HexStringUtils.getHexString(keyABits, keyABits.length);
+                String access = HexStringUtils.getHexString(accessBits, accessBits.length);
+                String keyB = HexStringUtils.getHexString(keyBBits, keyABits.length);
                 //Update UI with read data
-                mIOResult.setText(blockread);
+                mAccessKeyA.setText(keyA);
+                mAccessBits.setText(access);
+                mAccessKeyB.setText(keyB);
+                //Print the output
+                Log.i(TAG, "A:" + keyA+" ACCESS:"+access+" B:"+keyB);
+                //Notify the user that operation was successful
+                Toast.makeText(this, "Lectura de bloque EXITOSA.", Toast.LENGTH_LONG).show();
 
-                Log.i(TAG, "Bloque Leido: " + blockread);
-
-                        /*
-                        Editable BlockField = mDataBloque.getText();
-                        BlockField.clear();
-                        BlockField.append(blockread);
-                        */
-
-
-                Toast.makeText(this,
-                        "Lectura de bloque EXITOSA.",
-                        Toast.LENGTH_LONG).show();
-
-
-            }else{ // Authentication failed - Handle it
-                Editable BlockField = mDataBloque.getText();
-                BlockField.clear();
-                Toast.makeText(this,
-                        "Lectura de bloque FALLIDA dado autentificación fallida.",
-                        Toast.LENGTH_LONG).show();
+            // Authentication failed
+            }else{
+                Toast.makeText(this, "Lectura de bloque FALLIDA dado autentificación fallida.", Toast.LENGTH_LONG).show();
             }
 
             mfc.close();
