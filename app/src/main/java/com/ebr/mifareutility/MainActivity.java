@@ -485,15 +485,23 @@ public class MainActivity extends Activity {
 
 
                     if(auth){
+                        //Get block to read
                         int bloque = Integer.valueOf(mBloque.getText().toString());
+                        //Read block from tag
                         byte[] dataread = mfc.readBlock(bloque);
-
+                        //Convert block into string
                         String blockread = HexStringUtils.getHexString(dataread, dataread.length);
+                        //Update UI with read data
+                        mIOResult.setText(blockread);
+
                         Log.i(TAG, "Bloque Leido: " + blockread);
 
+                        /*
                         Editable BlockField = mDataBloque.getText();
                         BlockField.clear();
                         BlockField.append(blockread);
+                        */
+
 
                         Toast.makeText(this,
                                 "Lectura de bloque EXITOSA.",
@@ -552,8 +560,13 @@ public class MainActivity extends Activity {
 
 
                 if(auth){
-                    String strdata = mDatatoWrite.getText().toString();
+                    //String strdata = mDatatoWrite.getText().toString();
+
+                    //Get data from user
+                    String strdata = mIOResult.getText().toString();
+                    //Convert it to byte array
                     byte[] datatowrite = HexStringUtils.hexStringToByteArray(strdata);
+                    //Write block
                     mfc.writeBlock(bloque, datatowrite);
 
                     Toast.makeText(this,
