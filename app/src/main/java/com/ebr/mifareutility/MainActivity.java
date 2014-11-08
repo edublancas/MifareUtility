@@ -1,8 +1,7 @@
 package com.ebr.mifareutility;
 
-import java.io.IOException;
-import java.util.Locale;
 
+import java.io.IOException;
 import android.nfc.NfcAdapter;
 import android.nfc.tech.MifareClassic;
 import android.nfc.Tag;
@@ -16,8 +15,6 @@ import android.content.IntentFilter;
 import android.content.IntentFilter.MalformedMimeTypeException;
 import android.text.Editable;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RadioGroup;
@@ -33,10 +30,23 @@ public class MainActivity extends Activity {
     NfcAdapter mNfcAdapter;
     PendingIntent mNfcPendingIntent;
     IntentFilter[] mReadWriteTagFilters;
+    String[][]mTechList;
+
+    //Enum type for modes
+    public enum Mode {
+        INFOMODE,
+        AUTHMODE,
+        READMODE,
+        WRITEMODE,
+        ACCESSMODE
+    }
+
+    //Mode variable
+    private Mode  currentMode = Mode.INFOMODE;
+
     private boolean mWriteMode = false;
     private boolean mAuthenticationMode = false;
     private boolean ReadUIDMode = true;
-    String[][]mTechList;
 
     // UI elements on AUTH TAB
     EditText mAuthKeyA;
@@ -56,15 +66,8 @@ public class MainActivity extends Activity {
     EditText mAccessKeyB;
     EditText mAccessBits;
 
-
-    //Enum type for modes
-    public enum Mode {
-        INFOMODE,
-        AUTHMODE,
-        READMODE,
-        WRITEMODE,
-        ACCESSMODE
-    }
+    //Dialog element
+    AlertDialog mTagDialog;
 
 
     EditText mTagUID;
@@ -72,7 +75,7 @@ public class MainActivity extends Activity {
     EditText mBloque;
     EditText mDataBloque;
     EditText mDatatoWrite;
-    AlertDialog mTagDialog;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -354,6 +357,8 @@ public class MainActivity extends Activity {
     //This mode lets the user know general information about the tag
     private void enableTagWriteMode()
     {
+        currentMode = Mode.WRITEMODE;
+
         mWriteMode = true;
         mNfcAdapter.enableForegroundDispatch(this, mNfcPendingIntent,
                 mReadWriteTagFilters, mTechList);
@@ -361,6 +366,8 @@ public class MainActivity extends Activity {
 
     private void enableTagReadMode()
     {
+        currentMode = Mode.WRITEMODE;
+
         mWriteMode = false;
         mNfcAdapter.enableForegroundDispatch(this, mNfcPendingIntent,
                 mReadWriteTagFilters, mTechList);
@@ -369,6 +376,9 @@ public class MainActivity extends Activity {
     //This mode lets the user authenticate sectors on a tag
     private void enableTagAuthMode()
     {
+
+        currentMode = Mode.AUTHMODE;
+
         mAuthenticationMode = true;
         mNfcAdapter.enableForegroundDispatch(this, mNfcPendingIntent,
                 mReadWriteTagFilters, mTechList);
@@ -420,7 +430,7 @@ public class MainActivity extends Activity {
                 String tipotag = "";
                 String tamano = "";
                 byte[] tagUID = tagFromIntent.getId();
-                String hexUID = getHexString(tagUID, tagUID.length);
+                String hexUID = HexStringUtils.getHexString(tagUID, tagUID.length);
                 Log.i(TAG, "Tag UID: " + hexUID);
 
                 Editable UIDField = mTagUID.getText();
@@ -454,7 +464,7 @@ public class MainActivity extends Activity {
             {
                 try {
                     mfc.connect();
-                    boolean auth = false;
+                    boolean auth;
                     String hexkey = "";
                     int selectedRadioButton = mAuthRadioGroup.getCheckedRadioButtonId();
 
@@ -465,30 +475,20 @@ public class MainActivity extends Activity {
 
                     if (selectedRadioButton == R.id.radioButtonKeyA){
                         hexkey = mAuthKeyA.getText().toString();
-                        datakey = hexStringToByteArray(hexkey);
+                        datakey = HexStringUtils.hexStringToByteArray(hexkey);
                         auth = mfc.authenticateSectorWithKeyA(sector, datakey);
-                    }
-                    else if (selectedRadioButton == R.id.radioButtonKeyB){
+                    }else{
                         hexkey = mAuthKeyB.getText().toString();
-                        datakey = hexStringToByteArray(hexkey);
+                        datakey = HexStringUtils.hexStringToByteArray(hexkey);
                         auth = mfc.authenticateSectorWithKeyB(sector, datakey);
                     }
-                    else {
-                        //no item selected poner toast
-                        Toast.makeText(this,
-                                "°Seleccionar llave A o B!",
-                                Toast.LENGTH_LONG).show();
-                        mfc.close();
-                        return;
-                    }
-
 
 
                     if(auth){
                         int bloque = Integer.valueOf(mBloque.getText().toString());
                         byte[] dataread = mfc.readBlock(bloque);
 
-                        String blockread = getHexString(dataread, dataread.length);
+                        String blockread = HexStringUtils.getHexString(dataread, dataread.length);
                         Log.i(TAG, "Bloque Leido: " + blockread);
 
                         Editable BlockField = mDataBloque.getText();
@@ -529,7 +529,7 @@ public class MainActivity extends Activity {
 
             try {
                 mfc.connect();
-                boolean auth = false;
+                boolean auth;
                 String hexkey = "";
                 int id = mAuthRadioGroup.getCheckedRadioButtonId();
                 int bloque = Integer.valueOf(mBloque.getText().toString());
@@ -540,28 +540,20 @@ public class MainActivity extends Activity {
 
                 if (id == R.id.radioButtonKeyA){
                     hexkey = mAuthKeyA.getText().toString();
-                    datakey = hexStringToByteArray(hexkey);
+                    datakey = HexStringUtils.hexStringToByteArray(hexkey);
                     auth = mfc.authenticateSectorWithKeyA(sector, datakey);
                 }
-                else if (id == R.id.radioButtonKeyB){
+                else{
                     hexkey = mAuthKeyB.getText().toString();
-                    datakey = hexStringToByteArray(hexkey);
+                    datakey = HexStringUtils.hexStringToByteArray(hexkey);
                     auth = mfc.authenticateSectorWithKeyB(sector, datakey);
-                }
-                else {
-                    //no item selected poner toast
-                    Toast.makeText(this,
-                            "°Seleccionar llave A o B!",
-                            Toast.LENGTH_LONG).show();
-                    mfc.close();
-                    return;
                 }
 
 
 
                 if(auth){
                     String strdata = mDatatoWrite.getText().toString();
-                    byte[] datatowrite = hexStringToByteArray(strdata);
+                    byte[] datatowrite = HexStringUtils.hexStringToByteArray(strdata);
                     mfc.writeBlock(bloque, datatowrite);
 
                     Toast.makeText(this,
@@ -594,7 +586,7 @@ public class MainActivity extends Activity {
 
             try {
                 mfc.connect();
-                boolean auth = false;
+                boolean auth;
                 String hexkey = "";
                 int id = mAuthRadioGroup.getCheckedRadioButtonId();
                 int sector = Integer.valueOf(mAuthSector.getText().toString());
@@ -602,12 +594,12 @@ public class MainActivity extends Activity {
 
                 if (id == R.id.radioButtonKeyA){
                     hexkey = mAuthKeyA.getText().toString();
-                    datakey = hexStringToByteArray(hexkey);
+                    datakey = HexStringUtils.hexStringToByteArray(hexkey);
                     auth = mfc.authenticateSectorWithKeyA(sector, datakey);
                 }
                 else if (id == R.id.radioButtonKeyB){
                     hexkey = mAuthKeyB.getText().toString();
-                    datakey = hexStringToByteArray(hexkey);
+                    datakey = HexStringUtils.hexStringToByteArray(hexkey);
                     auth = mfc.authenticateSectorWithKeyB(sector, datakey);
                 }
                 else {
@@ -691,60 +683,6 @@ public class MainActivity extends Activity {
         }
     }
 
-    public static String getHexString(byte[] b, int length)
-    {
-        String result = "";
-        Locale loc = Locale.getDefault();
-
-        for (int i = 0; i < length; i++) {
-            result += Integer.toString((b[i] & 0xff) + 0x100, 16).substring(1);
-            result += " ";
-        }
-        return result.toUpperCase(loc);
-    }
-
-    public static byte[] hexStringToByteArray(String s) {
-        int len = s.length();
-        byte[] data = new byte[len / 2];
-        for (int i = 0; i < len; i += 2) {
-            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
-                    + Character.digit(s.charAt(i+1), 16));
-        }
-        return data;
-    }
-
-
-    /*
-     * **** MENU OPTIONS ****
-     */
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        //getMenuInflater().inflate(R.menu.activity_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-        if (item.getItemId() == R.id.menu_about){
-            Toast.makeText(this, "You clicked on About Item",
-                    Toast.LENGTH_LONG).show();
-            return true;
-        }else if (item.getItemId() == R.id.menu_ayuda){
-            Toast.makeText(this, "You clicked on Ayuda Item",
-                    Toast.LENGTH_LONG).show();
-            return true;
-
-        }else if (item.getItemId() == R.id.menu_settings){
-            Toast.makeText(this, "You clicked on Settings Item",
-                    Toast.LENGTH_LONG).show();
-            return true;
-        }else {
-            return false;
-        }
-    }
 
 
 }
