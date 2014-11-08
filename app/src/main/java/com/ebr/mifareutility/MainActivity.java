@@ -640,6 +640,63 @@ public class MainActivity extends Activity {
         }
     }
 
+    //Access intent
+    void resolveAccessIntent(Intent intent) {
+        String action = intent.getAction();
+        if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)) {
+            Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+            MifareClassic mfc = MifareClassic.get(tagFromIntent);
+
+            try {
+                mfc.connect();
+                boolean auth;
+                String hexkey = "";
+                int id = mAuthRadioGroup.getCheckedRadioButtonId();
+                int bloque = 3; //ACCESS is always on block 3
+                int sector = mfc.blockToSector(bloque);
+                byte[] datakey;
+
+
+
+                if (id == R.id.radioButtonKeyA){
+                    hexkey = mAuthKeyA.getText().toString();
+                    datakey = HexStringUtils.hexStringToByteArray(hexkey);
+                    auth = mfc.authenticateSectorWithKeyA(sector, datakey);
+                }
+                else{
+                    hexkey = mAuthKeyB.getText().toString();
+                    datakey = HexStringUtils.hexStringToByteArray(hexkey);
+                    auth = mfc.authenticateSectorWithKeyB(sector, datakey);
+                }
+
+                if(auth){
+                    //Get data from user
+                    String strdata = mIOResult.getText().toString();
+                    //Convert it to byte array
+                    byte[] datatowrite = HexStringUtils.hexStringToByteArray(strdata);
+                    //Write block
+                    mfc.writeBlock(bloque, datatowrite);
+
+                    Toast.makeText(this,
+                            "Escritura a bloque de acceso EXITOSA.",
+                            Toast.LENGTH_LONG).show();
+
+
+                }else{ // Authentication failed - Handle it
+                    Toast.makeText(this,
+                            "Escritura a bloque de acceso FALLIDA dado autentificación fallida.",
+                            Toast.LENGTH_LONG).show();
+                }
+
+                mfc.close();
+                mTagDialog.cancel();
+
+            }catch (IOException e) {
+                Log.e(TAG, e.getLocalizedMessage());
+            }
+
+        }
+    }
 
 
 
