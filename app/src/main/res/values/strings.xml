@@ -28,6 +28,8 @@
     <string name="menu_help">Ayuda</string>
     <string name="keyALabel">Introduzca la clave A</string>
     <string name="selectKeyLabel">Seleccione una llave para efectuar la operación</string>
-    <string name="hex_string">"123456789ABCDEF"</string>
+
+    <string name="hex_string">"FFFFFFFFFFFF"</string>
+    <string name="number">"1"</string>
 
 </resources>
