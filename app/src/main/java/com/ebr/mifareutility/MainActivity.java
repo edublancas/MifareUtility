@@ -39,27 +39,39 @@ public class MainActivity extends Activity {
     private boolean ReadUIDMode = true;
     String[][]mTechList;
 
-    // UI elements
+    // UI elements on AUTH TAB
+    EditText mAuthKeyA;
+    EditText mAuthKeyB;
+    EditText mAuthSector;
+    RadioGroup mAuthRadioGroup;
+
+    //UI elements on READ/WRITE tab
+    EditText mIOSector;
+    EditText mIOBlock;
+    EditText mIOResult;
+
+
+    //UI elements on ACCESS tAB
+    EditText mAccessSector;
+    EditText mAccessKeyA;
+    EditText mAccessKeyB;
+    EditText mAccessBits;
+
+
     EditText mTagUID;
     EditText mCardType;
-    EditText mHexKeyA;
-    EditText mHexKeyB;
-
-    EditText mAuthSector;
-    EditText mIOSector;
-    EditText mAccessSector;
-
     EditText mBloque;
     EditText mDataBloque;
     EditText mDatatoWrite;
     AlertDialog mTagDialog;
-    RadioGroup mRadioGroup;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+        //Tab host configuration
         TabHost tabHost=(TabHost)findViewById(R.id.tabHost);
         tabHost.setup();
 
@@ -79,31 +91,41 @@ public class MainActivity extends Activity {
         tabHost.addTab(spec2);
         tabHost.addTab(spec4);
 
+
+        //Link variables with UI elements on XML file (AUTH tab)
+        mAuthKeyA = ((EditText) findViewById(R.id.editTextKeyA));
+        mAuthKeyB = ((EditText) findViewById(R.id.editTextKeyB));
+        mAuthSector = ((EditText) findViewById(R.id.editTextAuthSector));
+        mAuthRadioGroup = ((RadioGroup) findViewById(R.id.keySelectorRadioGroup));
+        //Click listener for button (AUTH tab)
+        findViewById(R.id.authWithSelectedKey).setOnClickListener(mTagAuthenticate);
+
+
+        //Link variables with UI elements on XML file (READ/WRITE tab)
+        mIOSector = ((EditText) findViewById(R.id.editTextIOSector));
+        mIOBlock = ((EditText) findViewById(R.id.editTextIOBlock));
+        mIOResult = ((EditText) findViewById(R.id.editTextIOResult));
+        //Click listener for button (READ/WRITE tab)
+        findViewById(R.id.readButton).setOnClickListener(mTagRead);
+        findViewById(R.id.writeButton).setOnClickListener(mTagWrite);
+
+        //Link variables with UI elements on XML file (ACCESS tab)
+        mAccessSector = ((EditText) findViewById(R.id.editTextAccessSector));
+        mAccessKeyA = ((EditText) findViewById(R.id.editTextAccessKeyA));
+        mAccessKeyB = ((EditText) findViewById(R.id.editTextAccessKeyB));
+        mAccessBits = ((EditText) findViewById(R.id.editTextAccessBits));
+        //Click listener for button (ACCESS tab)
+        findViewById(R.id.readAccessButton).setOnClickListener(mTagReadAccess);
+        findViewById(R.id.writeAccessButton).setOnClickListener(mTagWriteAccess);
+
+
         /*
         mTagUID = ((EditText) findViewById(R.id.tag_uid));
         mCardType = ((EditText) findViewById(R.id.cardtype));
         mDataBloque = ((EditText) findViewById(R.id.editTextBloqueLeido));
         mDatatoWrite = ((EditText) findViewById(R.id.editTextBloqueAEscribir));
-
-        */
-
-        //Keys used fot all operations
-        mHexKeyA = ((EditText) findViewById(R.id.editTextKeyA));
-        mHexKeyB = ((EditText) findViewById(R.id.editTextKeyB));
-
-        //Sector is needed on the three tabs
-        mAuthSector = ((EditText) findViewById(R.id.editTextAuthSector));
-        mIOSector = ((EditText) findViewById(R.id.editTextIOSector));
-        mAccessSector = ((EditText) findViewById(R.id.editTextAccessSector));
-
         mBloque = ((EditText) findViewById(R.id.editTextBlock));
-        mRadioGroup = ((RadioGroup) findViewById(R.id.keySelectorRadioGroup));
-
-
-        //Click listeners for auth, read and write
-        findViewById(R.id.authWithSelectedKey).setOnClickListener(mTagAuthenticate);
-        findViewById(R.id.readButton).setOnClickListener(mTagRead);
-        findViewById(R.id.writeButton).setOnClickListener(mTagWrite);
+        */
 
 
         //Get a reference to the NFC adapter
@@ -158,6 +180,222 @@ public class MainActivity extends Activity {
     }
 
 
+
+    /*
+
+    METHODS TRIGGERED BY BUTTONS - SET FLAG TO CURRENT ACTION
+
+    */
+
+
+    //User wants to authenticate
+    private View.OnClickListener mTagAuthenticate = new View.OnClickListener()
+    {
+        @Override
+        public void onClick(View arg0)
+        {
+
+            //Set auth flag to true
+            enableTagAuthMode();
+
+            //Prepare message
+            Editable keyValue = (R.id.radioButtonKeyA == mAuthRadioGroup.getCheckedRadioButtonId() ? mAuthKeyA.getText() : mAuthKeyB.getText());
+            String keyName = (R.id.radioButtonKeyA == mAuthRadioGroup.getCheckedRadioButtonId() ? "A" : "B");
+            String msg = "Se va a autenticar el sector "+mAuthSector.getText()+" con la llave "+keyName+" ("+keyValue+")";
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(
+                    MainActivity.this)
+                    .setTitle(getString(R.string.ready_to_authenticate))
+                    .setMessage(msg)
+                    .setCancelable(true)
+                    .setNegativeButton("Cancelar",
+                            new DialogInterface.OnClickListener()
+                            {
+                                public void onClick(DialogInterface dialog,
+                                                    int id)
+                                {
+                                    dialog.cancel();
+                                }
+                            })
+                    .setOnCancelListener(new DialogInterface.OnCancelListener()
+                    {
+                        @Override
+                        public void onCancel(DialogInterface dialog)
+                        {
+                            mAuthenticationMode = false;
+                        }
+                    });
+            mTagDialog = builder.create();
+            mTagDialog.show();
+        }
+    };
+
+
+    //User wants to read a block
+    private View.OnClickListener mTagRead = new View.OnClickListener()
+    {
+        @Override
+        public void onClick(View arg0)
+        {
+
+            enableTagReadMode();
+            ReadUIDMode = false;
+
+            //Prepare message
+            Editable keyValue = (R.id.radioButtonKeyA == mAuthRadioGroup.getCheckedRadioButtonId() ? mAuthKeyA.getText() : mAuthKeyB.getText());
+            String keyName = (R.id.radioButtonKeyA == mAuthRadioGroup.getCheckedRadioButtonId() ? "A" : "B");
+            String msg = "Se va a autenticar el bloque "+mIOBlock.getText()+" en el sector "+mIOSector.getText()+" con la llave "+keyName+" ("+keyValue+")";
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(
+                    MainActivity.this)
+                    .setTitle(getString(R.string.ready_to_read))
+                    .setMessage(msg)
+                    .setCancelable(true)
+                    .setNegativeButton("Cancelar",
+                            new DialogInterface.OnClickListener()
+                            {
+                                public void onClick(DialogInterface dialog,
+                                                    int id)
+                                {
+                                    dialog.cancel();
+                                }
+                            })
+                    .setOnCancelListener(new DialogInterface.OnCancelListener()
+                    {
+                        @Override
+                        public void onCancel(DialogInterface dialog)
+                        {
+                            enableTagReadMode();
+                            ReadUIDMode = true;
+                        }
+                    });
+            mTagDialog = builder.create();
+            mTagDialog.show();
+        }
+    };
+
+
+    //User wants to write a block
+    private View.OnClickListener mTagWrite = new View.OnClickListener()
+    {
+        @Override
+        public void onClick(View arg0)
+        {
+
+            enableTagWriteMode();
+
+            Editable keyValue = (R.id.radioButtonKeyA == mAuthRadioGroup.getCheckedRadioButtonId() ? mAuthKeyA.getText() : mAuthKeyB.getText());
+            String keyName = (R.id.radioButtonKeyA == mAuthRadioGroup.getCheckedRadioButtonId() ? "A" : "B");
+            String msg = "Se va a autenticar el bloque "+mIOBlock.getText()+" en el sector "+mIOSector.getText()+" con la llave "+keyName+" ("+keyValue+")";
+
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(
+                    MainActivity.this)
+                    .setTitle(getString(R.string.ready_to_write))
+                    .setMessage(msg)
+                    .setCancelable(true)
+                    .setNegativeButton("Cancelar",
+                            new DialogInterface.OnClickListener()
+                            {
+                                public void onClick(DialogInterface dialog,
+                                                    int id)
+                                {
+                                    dialog.cancel();
+                                }
+                            })
+                    .setOnCancelListener(new DialogInterface.OnCancelListener()
+                    {
+                        @Override
+                        public void onCancel(DialogInterface dialog)
+                        {
+                            enableTagReadMode();
+                        }
+                    });
+            mTagDialog = builder.create();
+            mTagDialog.show();
+        }
+    };
+
+
+    //User wants to read access bit
+    private View.OnClickListener mTagReadAccess = new View.OnClickListener()
+    {
+        @Override
+        public void onClick(View arg0)
+        {
+
+        }
+    };
+
+    //User wants to write access bits
+    private View.OnClickListener mTagWriteAccess = new View.OnClickListener()
+    {
+        @Override
+        public void onClick(View arg0)
+        {
+
+        }
+    };
+
+    /*
+        FLAG SETTERS
+     */
+
+    private void enableTagWriteMode()
+    {
+        mWriteMode = true;
+        mNfcAdapter.enableForegroundDispatch(this, mNfcPendingIntent,
+                mReadWriteTagFilters, mTechList);
+    }
+
+    private void enableTagReadMode()
+    {
+        mWriteMode = false;
+        mNfcAdapter.enableForegroundDispatch(this, mNfcPendingIntent,
+                mReadWriteTagFilters, mTechList);
+    }
+
+    private void enableTagAuthMode()
+    {
+        mAuthenticationMode = true;
+        mNfcAdapter.enableForegroundDispatch(this, mNfcPendingIntent,
+                mReadWriteTagFilters, mTechList);
+    }
+
+
+
+
+    /*
+     * This is called for activities that set launchMode to "singleTop" or
+     * "singleTask" in their manifest package, or if a client used the
+     * FLAG_ACTIVITY_SINGLE_TOP flag when calling startActivity(Intent).
+     */
+
+    @Override
+    public void onNewIntent(Intent intent)
+    {
+        Log.d(TAG, "onNewIntent: " + intent);
+        Log.i("Foreground dispatch", "Discovered tag with intent: " + intent);
+
+        //Based on the flags state, determine which action to take
+        if (mAuthenticationMode)
+        {
+            // Currently in tag AUTHENTICATION mode
+            resolveAuthIntent(intent);
+            mTagDialog.cancel();
+        }
+        else if (!mWriteMode)
+        {
+            // Currently in tag READING mode
+            resolveReadIntent(intent);
+        } else
+        {
+            // Currently in tag WRITING mode
+            resolveWriteIntent(intent);
+        }
+    }
+
+
     //Read intent
     void resolveReadIntent(Intent intent) {
         String action = intent.getAction();
@@ -206,20 +444,20 @@ public class MainActivity extends Activity {
                     mfc.connect();
                     boolean auth = false;
                     String hexkey = "";
-                    int id = mRadioGroup.getCheckedRadioButtonId();
+                    int selectedRadioButton = mAuthRadioGroup.getCheckedRadioButtonId();
 
                     int sector = mfc.blockToSector(Integer.valueOf(mBloque.getText().toString()));
                     byte[] datakey;
 
-                    /*
 
-                    if (id == R.id.radioButtonKeyA){
-                        hexkey = mHexKeyA.getText().toString();
+
+                    if (selectedRadioButton == R.id.radioButtonKeyA){
+                        hexkey = mAuthKeyA.getText().toString();
                         datakey = hexStringToByteArray(hexkey);
                         auth = mfc.authenticateSectorWithKeyA(sector, datakey);
                     }
-                    else if (id == R.id.radioButtonKeyB){
-                        hexkey = mHexKeyB.getText().toString();
+                    else if (selectedRadioButton == R.id.radioButtonKeyB){
+                        hexkey = mAuthKeyB.getText().toString();
                         datakey = hexStringToByteArray(hexkey);
                         auth = mfc.authenticateSectorWithKeyB(sector, datakey);
                     }
@@ -233,7 +471,7 @@ public class MainActivity extends Activity {
                     }
 
 
-                    */
+
                     if(auth){
                         int bloque = Integer.valueOf(mBloque.getText().toString());
                         byte[] dataread = mfc.readBlock(bloque);
@@ -281,20 +519,20 @@ public class MainActivity extends Activity {
                 mfc.connect();
                 boolean auth = false;
                 String hexkey = "";
-                int id = mRadioGroup.getCheckedRadioButtonId();
+                int id = mAuthRadioGroup.getCheckedRadioButtonId();
                 int bloque = Integer.valueOf(mBloque.getText().toString());
                 int sector = mfc.blockToSector(bloque);
                 byte[] datakey;
 
-                /*
+
 
                 if (id == R.id.radioButtonKeyA){
-                    hexkey = mHexKeyA.getText().toString();
+                    hexkey = mAuthKeyA.getText().toString();
                     datakey = hexStringToByteArray(hexkey);
                     auth = mfc.authenticateSectorWithKeyA(sector, datakey);
                 }
                 else if (id == R.id.radioButtonKeyB){
-                    hexkey = mHexKeyB.getText().toString();
+                    hexkey = mAuthKeyB.getText().toString();
                     datakey = hexStringToByteArray(hexkey);
                     auth = mfc.authenticateSectorWithKeyB(sector, datakey);
                 }
@@ -307,7 +545,7 @@ public class MainActivity extends Activity {
                     return;
                 }
 
-                */
+
 
                 if(auth){
                     String strdata = mDatatoWrite.getText().toString();
@@ -346,17 +584,17 @@ public class MainActivity extends Activity {
                 mfc.connect();
                 boolean auth = false;
                 String hexkey = "";
-                int id = mRadioGroup.getCheckedRadioButtonId();
+                int id = mAuthRadioGroup.getCheckedRadioButtonId();
                 int sector = Integer.valueOf(mAuthSector.getText().toString());
                 byte[] datakey;
-/*
+
                 if (id == R.id.radioButtonKeyA){
-                    hexkey = mHexKeyA.getText().toString();
+                    hexkey = mAuthKeyA.getText().toString();
                     datakey = hexStringToByteArray(hexkey);
                     auth = mfc.authenticateSectorWithKeyA(sector, datakey);
                 }
                 else if (id == R.id.radioButtonKeyB){
-                    hexkey = mHexKeyB.getText().toString();
+                    hexkey = mAuthKeyB.getText().toString();
                     datakey = hexStringToByteArray(hexkey);
                     auth = mfc.authenticateSectorWithKeyB(sector, datakey);
                 }
@@ -368,7 +606,7 @@ public class MainActivity extends Activity {
                     mfc.close();
                     return;
                 }
-*/
+
                 if(auth){
                     Toast.makeText(this,
                             "Autentificación de sector EXITOSA.",
@@ -403,35 +641,6 @@ public class MainActivity extends Activity {
     }
 
 
-    /*
-     * This is called for activities that set launchMode to "singleTop" or
-     * "singleTask" in their manifest package, or if a client used the
-     * FLAG_ACTIVITY_SINGLE_TOP flag when calling startActivity(Intent).
-     */
-    @Override
-    public void onNewIntent(Intent intent)
-    {
-        Log.d(TAG, "onNewIntent: " + intent);
-        Log.i("Foreground dispatch", "Discovered tag with intent: " + intent);
-
-        if (mAuthenticationMode)
-        {
-            // Currently in tag AUTHENTICATION mode
-            resolveAuthIntent(intent);
-            mTagDialog.cancel();
-        }
-        else if (!mWriteMode)
-        {
-            // Currently in tag READING mode
-            resolveReadIntent(intent);
-        } else
-        {
-            // Currently in tag WRITING mode
-            resolveWriteIntent(intent);
-        }
-    }
-
-
     /* Called when the system is about to start resuming a previous activity. */
     @Override
     public void onPause()
@@ -441,150 +650,6 @@ public class MainActivity extends Activity {
         mNfcAdapter.disableForegroundDispatch(this);
 
     }
-
-
-    private void enableTagWriteMode()
-    {
-        mWriteMode = true;
-        mNfcAdapter.enableForegroundDispatch(this, mNfcPendingIntent,
-                mReadWriteTagFilters, mTechList);
-    }
-
-    private void enableTagReadMode()
-    {
-        mWriteMode = false;
-        mNfcAdapter.enableForegroundDispatch(this, mNfcPendingIntent,
-                mReadWriteTagFilters, mTechList);
-    }
-
-    private void enableTagAuthMode()
-    {
-        mAuthenticationMode = true;
-        mNfcAdapter.enableForegroundDispatch(this, mNfcPendingIntent,
-                mReadWriteTagFilters, mTechList);
-    }
-
-
-    /*
-     * **** TAG AUTHENTICATE METHODS ****
-     */
-    private View.OnClickListener mTagAuthenticate = new View.OnClickListener()
-    {
-        @Override
-        public void onClick(View arg0)
-        {
-
-            //Set auth flag to true
-            enableTagAuthMode();
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(
-                    MainActivity.this)
-                    .setTitle(getString(R.string.ready_to_authenticate))
-                    .setMessage(getString(R.string.ready_to_authenticate_instructions))
-                    .setCancelable(true)
-                    .setNegativeButton("Cancelar",
-                            new DialogInterface.OnClickListener()
-                            {
-                                public void onClick(DialogInterface dialog,
-                                                    int id)
-                                {
-                                    dialog.cancel();
-                                }
-                            })
-                    .setOnCancelListener(new DialogInterface.OnCancelListener()
-                    {
-                        @Override
-                        public void onCancel(DialogInterface dialog)
-                        {
-                            mAuthenticationMode = false;
-                        }
-                    });
-            mTagDialog = builder.create();
-            mTagDialog.show();
-        }
-    };
-
-
-    /*
-     * **** TAG READ METHODS ****
-     */
-
-    private View.OnClickListener mTagRead = new View.OnClickListener()
-    {
-        @Override
-        public void onClick(View arg0)
-        {
-
-            enableTagReadMode();
-            ReadUIDMode = false;
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(
-                    MainActivity.this)
-                    .setTitle(getString(R.string.ready_to_read))
-                    .setMessage(getString(R.string.ready_to_read_instructions))
-                    .setCancelable(true)
-                    .setNegativeButton("Cancelar",
-                            new DialogInterface.OnClickListener()
-                            {
-                                public void onClick(DialogInterface dialog,
-                                                    int id)
-                                {
-                                    dialog.cancel();
-                                }
-                            })
-                    .setOnCancelListener(new DialogInterface.OnCancelListener()
-                    {
-                        @Override
-                        public void onCancel(DialogInterface dialog)
-                        {
-                            enableTagReadMode();
-                            ReadUIDMode = true;
-                        }
-                    });
-            mTagDialog = builder.create();
-            mTagDialog.show();
-        }
-    };
-
-
-    /*
-     * **** TAG WRITE METHODS ****
-     */
-
-    private View.OnClickListener mTagWrite = new View.OnClickListener()
-    {
-        @Override
-        public void onClick(View arg0)
-        {
-
-            enableTagWriteMode();
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(
-                    MainActivity.this)
-                    .setTitle(getString(R.string.ready_to_write))
-                    .setMessage(getString(R.string.ready_to_write_instructions))
-                    .setCancelable(true)
-                    .setNegativeButton("Cancelar",
-                            new DialogInterface.OnClickListener()
-                            {
-                                public void onClick(DialogInterface dialog,
-                                                    int id)
-                                {
-                                    dialog.cancel();
-                                }
-                            })
-                    .setOnCancelListener(new DialogInterface.OnCancelListener()
-                    {
-                        @Override
-                        public void onCancel(DialogInterface dialog)
-                        {
-                            enableTagReadMode();
-                        }
-                    });
-            mTagDialog = builder.create();
-            mTagDialog.show();
-        }
-    };
 
 
 

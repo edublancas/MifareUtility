@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/MifareControl.iml" filepath="$PROJECT_DIR$/MifareControl.iml" />
+      <module fileurl="file://$PROJECT_DIR$/MifareUtility.iml" filepath="$PROJECT_DIR$/MifareUtility.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
