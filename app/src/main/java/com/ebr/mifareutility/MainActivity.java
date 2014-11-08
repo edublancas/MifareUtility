@@ -640,8 +640,8 @@ public class MainActivity extends Activity {
         }
     }
 
-    //Access intent
-    void resolveAccessIntent(Intent intent) {
+    //Write access intent
+    void resolveWriteAccessIntent(Intent intent) {
         String action = intent.getAction();
         if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)) {
             Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
@@ -697,6 +697,79 @@ public class MainActivity extends Activity {
 
         }
     }
+
+//Read access intent
+void resolveReadAccessIntent(Intent intent) {
+    String action = intent.getAction();
+    if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)) {
+        Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+        MifareClassic mfc = MifareClassic.get(tagFromIntent);
+
+        try {
+            mfc.connect();
+            boolean auth;
+            String hexkey = "";
+            int selectedRadioButton = mAuthRadioGroup.getCheckedRadioButtonId();
+
+            int sector = mfc.blockToSector(Integer.valueOf(mBloque.getText().toString()));
+            byte[] datakey;
+
+
+
+            if (selectedRadioButton == R.id.radioButtonKeyA){
+                hexkey = mAuthKeyA.getText().toString();
+                datakey = HexStringUtils.hexStringToByteArray(hexkey);
+                auth = mfc.authenticateSectorWithKeyA(sector, datakey);
+            }else{
+                hexkey = mAuthKeyB.getText().toString();
+                datakey = HexStringUtils.hexStringToByteArray(hexkey);
+                auth = mfc.authenticateSectorWithKeyB(sector, datakey);
+            }
+
+
+            if(auth){
+                //Get block to read
+                int bloque = Integer.valueOf(mBloque.getText().toString());
+                //Read block from tag
+                byte[] dataread = mfc.readBlock(bloque);
+                //Convert block into string
+                String blockread = HexStringUtils.getHexString(dataread, dataread.length);
+                //Update UI with read data
+                mIOResult.setText(blockread);
+
+                Log.i(TAG, "Bloque Leido: " + blockread);
+
+                        /*
+                        Editable BlockField = mDataBloque.getText();
+                        BlockField.clear();
+                        BlockField.append(blockread);
+                        */
+
+
+                Toast.makeText(this,
+                        "Lectura de bloque EXITOSA.",
+                        Toast.LENGTH_LONG).show();
+
+
+            }else{ // Authentication failed - Handle it
+                Editable BlockField = mDataBloque.getText();
+                BlockField.clear();
+                Toast.makeText(this,
+                        "Lectura de bloque FALLIDA dado autentificación fallida.",
+                        Toast.LENGTH_LONG).show();
+            }
+
+            mfc.close();
+            mTagDialog.cancel();
+
+        }catch (IOException e) {
+            Log.e(TAG, e.getLocalizedMessage());
+        }
+
+
+    }
+}
+
 
 
 
