@@ -26,7 +26,7 @@ import android.widget.Toast;
 public class MainActivity extends Activity {
 
 
-    private static final String TAG = "nfcinventory_simple";
+    private static final String TAG = "Mifare";
 
     // NFC-related variables
     NfcAdapter mNfcAdapter;
@@ -333,7 +333,40 @@ public class MainActivity extends Activity {
         @Override
         public void onClick(View arg0)
         {
-            currentMode = Mode.READACCESSMODE;
+
+            enableReadAccessMode();
+
+            Editable keyValue = (R.id.radioButtonKeyA == mAuthRadioGroup.getCheckedRadioButtonId() ? mAuthKeyA.getText() : mAuthKeyB.getText());
+            String keyName = (R.id.radioButtonKeyA == mAuthRadioGroup.getCheckedRadioButtonId() ? "A" : "B");
+            String msg = "Leer accesos: Se va a autenticar el bloque "+mIOBlock.getText()+" en el sector "+mAccessSector.getText()+" con la llave "+keyName+" ("+keyValue+")";
+
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(
+                    MainActivity.this)
+                    .setTitle(getString(R.string.ready_to_write))
+                    .setMessage(msg)
+                    .setCancelable(true)
+                    .setNegativeButton("Cancelar",
+                            new DialogInterface.OnClickListener()
+                            {
+                                public void onClick(DialogInterface dialog,
+                                                    int id)
+                                {
+                                    dialog.cancel();
+                                }
+                            })
+                    .setOnCancelListener(new DialogInterface.OnCancelListener()
+                    {
+                        @Override
+                        public void onCancel(DialogInterface dialog)
+                        {
+                            enableTagReadMode();
+                        }
+                    });
+
+            mTagDialog = builder.create();
+            mTagDialog.show();
+
 
         }
     };
@@ -344,8 +377,38 @@ public class MainActivity extends Activity {
         @Override
         public void onClick(View arg0)
         {
-            currentMode = Mode.WRITEACCESSMODE;
+            enableWriteAccessMode();
 
+            Editable keyValue = (R.id.radioButtonKeyA == mAuthRadioGroup.getCheckedRadioButtonId() ? mAuthKeyA.getText() : mAuthKeyB.getText());
+            String keyName = (R.id.radioButtonKeyA == mAuthRadioGroup.getCheckedRadioButtonId() ? "A" : "B");
+            String msg = "ESCRIBIR ACCESOS: Se va a autenticar el bloque "+mIOBlock.getText()+" en el sector "+mIOSector.getText()+" con la llave "+keyName+" ("+keyValue+")";
+
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(
+                    MainActivity.this)
+                    .setTitle(getString(R.string.ready_to_write))
+                    .setMessage(msg)
+                    .setCancelable(true)
+                    .setNegativeButton("Cancelar",
+                            new DialogInterface.OnClickListener()
+                            {
+                                public void onClick(DialogInterface dialog,
+                                                    int id)
+                                {
+                                    dialog.cancel();
+                                }
+                            })
+                    .setOnCancelListener(new DialogInterface.OnCancelListener()
+                    {
+                        @Override
+                        public void onCancel(DialogInterface dialog)
+                        {
+                            enableTagReadMode();
+                        }
+                    });
+
+            mTagDialog = builder.create();
+            mTagDialog.show();
         }
     };
 
@@ -383,6 +446,22 @@ public class MainActivity extends Activity {
                 mReadWriteTagFilters, mTechList);
     }
 
+    private void enableReadAccessMode(){
+        currentMode = Mode.READACCESSMODE;
+
+        mNfcAdapter.enableForegroundDispatch(this, mNfcPendingIntent,
+                mReadWriteTagFilters, mTechList);
+
+    }
+
+    private void enableWriteAccessMode(){
+        currentMode = Mode.WRITEACCESSMODE;
+
+        mNfcAdapter.enableForegroundDispatch(this, mNfcPendingIntent,
+                mReadWriteTagFilters, mTechList);
+
+    }
+
 
 
 
@@ -397,6 +476,22 @@ public class MainActivity extends Activity {
     {
         Log.d(TAG, "onNewIntent: " + intent);
         Log.i("Foreground dispatch", "Discovered tag with intent: " + intent);
+
+        if(currentMode==Mode.READACCESSMODE){
+
+            System.out.println("Leyendo accesos...");
+            resolveReadAccessIntent(intent);
+            mTagDialog.cancel();
+            return;
+        }
+
+        if(currentMode==Mode.WRITEACCESSMODE){
+
+            System.out.println("Escribiendo accesos...");
+            resolveWriteAccessIntent(intent);
+            mTagDialog.cancel();
+            return;
+        }
 
         //Based on the flags state, determine which action to take
         if (mAuthenticationMode)
@@ -414,6 +509,8 @@ public class MainActivity extends Activity {
             // Currently in tag WRITING mode
             resolveWriteIntent(intent);
         }
+
+
     }
 
 
@@ -467,7 +564,12 @@ public class MainActivity extends Activity {
                     String hexkey = "";
                     int selectedRadioButton = mAuthRadioGroup.getCheckedRadioButtonId();
 
-                    int sector = mfc.blockToSector(Integer.valueOf(mIOBlock.getText().toString()));
+
+
+                    int sector = Integer.valueOf(mIOSector.getText().toString());
+
+
+                    //int sector = mfc.blockToSector(Integer.valueOf(mIOBlock.getText().toString()));
                     byte[] datakey;
 
 
@@ -484,8 +586,12 @@ public class MainActivity extends Activity {
 
 
                     if(auth){
-                        //Get block to read
-                        int bloque = Integer.valueOf(mIOBlock.getText().toString());
+                        //Get block to read (convert to 0-3 value)
+                        //int bloque = Integer.valueOf(mIOBlock.getText().toString());
+                        int readBlock = Integer.valueOf(mIOBlock.getText().toString());
+                        int bloque = Integer.valueOf(SectorBlockUtils.getAbsoluteBlock(sector, readBlock));
+
+
                         //Read block from tag
                         byte[] dataread = mfc.readBlock(bloque);
 
@@ -525,8 +631,13 @@ public class MainActivity extends Activity {
                 boolean auth;
                 String hexkey = "";
                 int id = mAuthRadioGroup.getCheckedRadioButtonId();
-                int bloque = Integer.valueOf(mIOBlock.getText().toString());
-                int sector = mfc.blockToSector(bloque);
+                //int bloque = Integer.valueOf(mIOBlock.getText().toString());
+                //int sector = mfc.blockToSector(bloque);
+
+                int sector = Integer.valueOf(mIOSector.getText().toString());
+                int readBlock = Integer.valueOf(mIOBlock.getText().toString());
+                int bloque = Integer.valueOf(SectorBlockUtils.getAbsoluteBlock(sector, readBlock));
+
                 byte[] datakey;
 
 
@@ -547,8 +658,9 @@ public class MainActivity extends Activity {
                 if(auth){
                     //String strdata = mDatatoWrite.getText().toString();
 
-                    //Get data from user
-                    String strdata = mIOResult.getText().toString();
+                    //Get data from user, strip spaces
+                    String strdata = mIOResult.getText().toString().replaceAll("\\s+","");
+
                     //Convert it to byte array
                     byte[] datatowrite = HexStringUtils.hexStringToByteArray(strdata);
                     //Write block
@@ -622,8 +734,13 @@ public class MainActivity extends Activity {
                 boolean auth;
                 String hexkey = "";
                 int id = mAuthRadioGroup.getCheckedRadioButtonId();
-                int bloque = 3; //ACCESS is always on block 3
-                int sector = mfc.blockToSector(bloque);
+
+                //int bloque = 3; //ACCESS is always on block 3
+                //int sector = mfc.blockToSector(bloque);
+
+                int sector = Integer.valueOf(mAccessSector.getText().toString());
+                int bloque = Integer.valueOf(SectorBlockUtils.getAbsoluteBlock(sector, 3));
+
                 byte[] datakey;
 
 
@@ -641,15 +758,30 @@ public class MainActivity extends Activity {
 
                 if(auth){
                     //Get data from user
-                    String strdata = mIOResult.getText().toString();
+                    String keyAString = mAccessKeyA.getText().toString();
+                    String keyBString = mAccessKeyB.getText().toString();
+                    String accessBits = mAccessBits.getText().toString();
+
+                    String stringToWrite = (keyAString+accessBits+keyBString).replaceAll("\\s+","");
+
+                    System.out.println("SE VA A ESCRIBIR. A:"+keyAString+" B "+keyBString+" Access:"+accessBits);
+
+                    /*byte[] keyA = HexStringUtils.hexStringToByteArray(keyAString);
+                    byte[] keyB = HexStringUtils.hexStringToByteArray(keyBString);
+                    byte[] access = HexStringUtils.hexStringToByteArray(accessBits);
+                    */
+
+                    byte[] dataToWrite = HexStringUtils.hexStringToByteArray(stringToWrite);
+
+                    System.out.println(HexStringUtils.getHexString(dataToWrite, dataToWrite.length));
+
                     //Convert it to byte array
-                    byte[] datatowrite = HexStringUtils.hexStringToByteArray(strdata);
-                    //Write block
-                    mfc.writeBlock(bloque, datatowrite);
+                    mfc.writeBlock(bloque, dataToWrite);
 
                     Toast.makeText(this,
                             "Escritura a bloque de acceso EXITOSA.",
                             Toast.LENGTH_LONG).show();
+
 
 
                 }else{ // Authentication failed - Handle it
@@ -679,7 +811,8 @@ void resolveReadAccessIntent(Intent intent) {
             String hexkey = "";
             int selectedRadioButton = mAuthRadioGroup.getCheckedRadioButtonId();
 
-            int sector = mfc.blockToSector(Integer.valueOf(mIOBlock.getText().toString()));
+            //int sector = mfc.blockToSector(Integer.valueOf(mAccessSector.getText().toString()));
+            int sector = Integer.valueOf(mAccessSector.getText().toString());
             byte[] datakey;
 
 
@@ -697,9 +830,14 @@ void resolveReadAccessIntent(Intent intent) {
 
             if(auth){
                 //Get block to read
-                int bloque = Integer.valueOf(mIOBlock.getText().toString());
+                //int sector = Integer.valueOf(mAccessSector.getText().toString());
+                int bloque = Integer.valueOf(SectorBlockUtils.getAbsoluteBlock(sector, 3));
                 //Read block from tag
                 byte[] dataread = mfc.readBlock(bloque);
+
+
+                System.out.println("DATO LEIDO: "+dataread);
+
                 //Split byte array into KeyA, access bits and KeyB
                 byte[] keyABits = Arrays.copyOfRange(dataread, 0, 6);// Key A goes from 0 to 5
                 byte[] accessBits = Arrays.copyOfRange(dataread, 6, 10); // Access bits go from 6 to 9
@@ -713,7 +851,7 @@ void resolveReadAccessIntent(Intent intent) {
                 mAccessBits.setText(access);
                 mAccessKeyB.setText(keyB);
                 //Print the output
-                Log.i(TAG, "A:" + keyA+" ACCESS:"+access+" B:"+keyB);
+                Log.i(TAG, "ESCRITURA DE ACCESO. A:" + keyA+" ACCESS:"+access+" B:"+keyB);
                 //Notify the user that operation was successful
                 Toast.makeText(this, "Lectura de bloque EXITOSA.", Toast.LENGTH_LONG).show();
 
@@ -728,6 +866,7 @@ void resolveReadAccessIntent(Intent intent) {
         }catch (IOException e) {
             Log.e(TAG, e.getLocalizedMessage());
         }
+
 
 
     }
@@ -789,6 +928,12 @@ void resolveReadAccessIntent(Intent intent) {
         }
     }
 
+    byte[] concatenateByteArrays(byte[] a, byte[] b) {
+        byte[] result = new byte[a.length + b.length];
+        System.arraycopy(a, 0, result, 0, a.length);
+        System.arraycopy(b, 0, result, a.length, b.length);
+        return result;
+    }
 
 
 }

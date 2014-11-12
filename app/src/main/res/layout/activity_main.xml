@@ -19,6 +19,209 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="fill_parent"
+            android:id="@+id/tab4"
+            android:orientation="vertical"
+            android:paddingTop="60dp"
+            android:weightSum="1">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text='Se usará la llave seleccionada en "Auth"'
+                android:id="@+id/textView12" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Seleccione un sector"
+                android:id="@+id/textView11" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:id="@+id/editTextAccessSector"
+                android:hint="@string/number"
+                android:inputType="number"
+                android:maxLength="2"
+            />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Leer accesos"
+                android:id="@+id/readAccessButton"
+                android:layout_gravity="center_horizontal" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Escribir accesos"
+                android:id="@+id/writeAccessButton"
+                android:layout_gravity="center_horizontal" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.40" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Introduzca la nueva llave A"
+                android:id="@+id/textView13"
+
+             />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/editTextAccessKeyA"
+                android:digits="0123456789ABCDEF"
+                android:hint="@string/hex_string"
+                android:inputType="textCapCharacters|text|textNoSuggestions"
+            />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Introduzca bits de acceso"
+                android:id="@+id/textView16" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:ems="10"
+                android:id="@+id/editTextAccessBits" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Introduzca la nueva llave B"
+                android:id="@+id/textView15"
+                android:layout_gravity="center_horizontal" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/editTextAccessKeyB"
+                android:digits="0123456789ABCDEF"
+                android:hint="@string/hex_string"
+                android:imeOptions="actionDone"
+                android:inputType="textCapCharacters|text|textNoSuggestions"
+             />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/activity_vertical_margin" />
+
+            <TextView
+                android:layout_width="397dp"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Deje cualquier campo en blanco para dejarlo igual"
+                android:id="@+id/textView17" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/tab2"
+            android:orientation="vertical"
+            android:paddingTop="60dp"
+            android:weightSum="1">
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text='Se usará la llave seleccionada en "Auth"'
+                android:id="@+id/textView5"
+                android:layout_weight="0.03" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Sector"
+                android:id="@+id/textView8"
+                android:layout_weight="0.03" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:id="@+id/editTextIOSector"
+                android:layout_weight="0.03"
+                android:hint="@string/number"
+                android:inputType="number"
+                android:maxLength="2"
+            />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Bloque"
+                android:id="@+id/textView9"
+                android:layout_weight="0.03" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:ems="10"
+                android:id="@+id/editTextIOBlock"
+                android:layout_weight="0.03"
+                android:hint="@string/number"
+                android:maxLength="2"
+            />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Leer"
+                android:id="@+id/readButton"
+                android:layout_weight="0.03" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Escribir"
+                android:id="@+id/writeButton"
+                android:layout_weight="0.03"
+                android:layout_gravity="center_horizontal" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Resultado"
+                android:id="@+id/textView10"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="0.03" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/editTextIOResult"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="0.03"
+            />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
             android:id="@+id/tab1"
             android:orientation="vertical"
             android:paddingTop="60dp"
@@ -130,209 +333,6 @@
                 android:layout_height="wrap_content"
                 android:text="Autenticar"
                 android:id="@+id/authWithSelectedKey" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="fill_parent"
-            android:id="@+id/tab2"
-            android:orientation="vertical"
-            android:paddingTop="60dp"
-            android:weightSum="1">
-
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:text='Se usará la llave seleccionada en "Auth"'
-                android:id="@+id/textView5"
-                android:layout_weight="0.03" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="Sector"
-                android:id="@+id/textView8"
-                android:layout_weight="0.03" />
-
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:id="@+id/editTextIOSector"
-                android:layout_weight="0.03"
-                android:hint="@string/number"
-                android:inputType="number"
-                android:maxLength="2"
-            />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="Bloque"
-                android:id="@+id/textView9"
-                android:layout_weight="0.03" />
-
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="number"
-                android:ems="10"
-                android:id="@+id/editTextIOBlock"
-                android:layout_weight="0.03"
-                android:hint="@string/number"
-                android:maxLength="2"
-            />
-
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Leer"
-                android:id="@+id/readButton"
-                android:layout_weight="0.03" />
-
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Escribir"
-                android:id="@+id/writeButton"
-                android:layout_weight="0.03"
-                android:layout_gravity="center_horizontal" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="Resultado"
-                android:id="@+id/textView10"
-                android:layout_gravity="center_horizontal"
-                android:layout_weight="0.03" />
-
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/editTextIOResult"
-                android:layout_gravity="center_horizontal"
-                android:layout_weight="0.03"
-            />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="fill_parent"
-            android:id="@+id/tab4"
-            android:orientation="vertical"
-            android:paddingTop="60dp"
-            android:weightSum="1">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:text='Se usará la llave seleccionada en "Auth"'
-                android:id="@+id/textView12" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="Seleccione un sector"
-                android:id="@+id/textView11" />
-
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:id="@+id/editTextAccessSector"
-                android:hint="@string/number"
-                android:inputType="number"
-                android:maxLength="2"
-            />
-
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Leer accesos"
-                android:id="@+id/readAccessButton"
-                android:layout_gravity="center_horizontal" />
-
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Escribir accesos"
-                android:id="@+id/writeAccessButton"
-                android:layout_gravity="center_horizontal" />
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.40" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="Introduzca la nueva llave A"
-                android:id="@+id/textView13"
-
-             />
-
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/editTextAccessKeyA"
-                android:digits="0123456789ABCDEF"
-                android:hint="@string/hex_string"
-                android:inputType="textCapCharacters|text|textNoSuggestions"
-            />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="Introduzca bits de acceso"
-                android:id="@+id/textView16" />
-
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="number"
-                android:ems="10"
-                android:id="@+id/editTextAccessBits" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="Introduzca la nueva llave B"
-                android:id="@+id/textView15"
-                android:layout_gravity="center_horizontal" />
-
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/editTextAccessKeyB"
-                android:digits="0123456789ABCDEF"
-                android:hint="@string/hex_string"
-                android:imeOptions="actionDone"
-                android:inputType="textCapCharacters|text|textNoSuggestions"
-             />
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/activity_vertical_margin" />
-
-            <TextView
-                android:layout_width="397dp"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:text="Deje cualquier campo en blanco para dejarlo igual"
-                android:id="@+id/textView17" />
 
         </LinearLayout>
 
