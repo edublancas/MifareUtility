@@ -41,7 +41,9 @@ public class MainActivity extends Activity {
         READMODE,
         WRITEMODE,
         READACCESSMODE,
-        WRITEACCESSMODE
+        WRITEACCESSMODE,
+        READVALUEMODE,
+        WRITEVALUEMODE,
     }
 
     //Mode variable
@@ -63,11 +65,16 @@ public class MainActivity extends Activity {
     EditText mIOResult;
 
 
-    //UI elements on ACCESS tAB
+    //UI elements on ACCESS tab
     EditText mAccessSector;
     EditText mAccessKeyA;
     EditText mAccessKeyB;
     EditText mAccessBits;
+
+    //UI elements on VALUE tab
+    EditText mValueSector;
+    EditText mValueBlock;
+    EditText mValue;
 
     //Dialog element
     AlertDialog mTagDialog;
@@ -95,12 +102,17 @@ public class MainActivity extends Activity {
         spec2.setContent(R.id.tab2);
         spec2.setIndicator("Read/Write");
 
+        TabHost.TabSpec spec3=tabHost.newTabSpec("T3");
+        spec3.setContent(R.id.tab3);
+        spec3.setIndicator("Value");
+
         TabHost.TabSpec spec4=tabHost.newTabSpec("T4");
         spec4.setContent(R.id.tab4);
         spec4.setIndicator("Access");
 
         tabHost.addTab(spec1);
         tabHost.addTab(spec2);
+        tabHost.addTab(spec3);
         tabHost.addTab(spec4);
 
 
@@ -130,6 +142,13 @@ public class MainActivity extends Activity {
         findViewById(R.id.readAccessButton).setOnClickListener(mTagReadAccess);
         findViewById(R.id.writeAccessButton).setOnClickListener(mTagWriteAccess);
 
+        //Link variable with UI elements on XML file (VALUE tab)
+        mValueSector = ((EditText) findViewById(R.id.editTextValueSector));
+        mValueBlock = ((EditText) findViewById(R.id.editTextValueBlock));
+        mValue = ((EditText) findViewById(R.id.editTextValue));
+        //Click listener for button (VALUE tab)
+        findViewById(R.id.buttonValueRead).setOnClickListener(mTagReadValue);
+        findViewById(R.id.buttonValueWrite).setOnClickListener(mTagWriteValue);
 
         /*
         mTagUID = ((EditText) findViewById(R.id.tag_uid));
@@ -412,6 +431,58 @@ public class MainActivity extends Activity {
         }
     };
 
+    //User wants to read a value
+    private View.OnClickListener mTagReadValue = new View.OnClickListener()
+    {
+        @Override
+        public void onClick(View arg0)
+        {
+            enableReadValueMode();
+
+            Editable keyValue = (R.id.radioButtonKeyA == mAuthRadioGroup.getCheckedRadioButtonId() ? mAuthKeyA.getText() : mAuthKeyB.getText());
+            String keyName = (R.id.radioButtonKeyA == mAuthRadioGroup.getCheckedRadioButtonId() ? "A" : "B");
+            String msg = "LEER VALOR: Se va a autenticar el bloque "+mIOBlock.getText()+" en el sector "+mIOSector.getText()+" con la llave "+keyName+" ("+keyValue+")";
+
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(
+                    MainActivity.this)
+                    .setTitle(getString(R.string.ready_to_write))
+                    .setMessage(msg)
+                    .setCancelable(true)
+                    .setNegativeButton("Cancelar",
+                            new DialogInterface.OnClickListener()
+                            {
+                                public void onClick(DialogInterface dialog,
+                                                    int id)
+                                {
+                                    dialog.cancel();
+                                }
+                            })
+                    .setOnCancelListener(new DialogInterface.OnCancelListener()
+                    {
+                        @Override
+                        public void onCancel(DialogInterface dialog)
+                        {
+                            enableTagReadMode();
+                        }
+                    });
+
+            mTagDialog = builder.create();
+            mTagDialog.show();
+        }
+    };
+
+    //User wants to read a value
+    private View.OnClickListener mTagWriteValue = new View.OnClickListener()
+    {
+        @Override
+        public void onClick(View arg0) {
+        }
+    };
+
+
+
+
     /*
         FLAG SETTERS
      */
@@ -462,6 +533,13 @@ public class MainActivity extends Activity {
 
     }
 
+    private void enableReadValueMode(){
+        currentMode = Mode.READVALUEMODE;
+
+        mNfcAdapter.enableForegroundDispatch(this, mNfcPendingIntent,
+                mReadWriteTagFilters, mTechList);
+    }
+
 
 
 
@@ -489,6 +567,14 @@ public class MainActivity extends Activity {
 
             System.out.println("Escribiendo accesos...");
             resolveWriteAccessIntent(intent);
+            mTagDialog.cancel();
+            return;
+        }
+
+        if(currentMode==Mode.READVALUEMODE){
+
+            System.out.println("Leyendo valor...");
+            resolveReadValueIntent(intent);
             mTagDialog.cancel();
             return;
         }
@@ -872,6 +958,75 @@ void resolveReadAccessIntent(Intent intent) {
     }
 }
 
+    //Read access intent
+    void resolveReadValueIntent(Intent intent) {
+        String action = intent.getAction();
+        if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)) {
+            Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+            MifareClassic mfc = MifareClassic.get(tagFromIntent);
+
+            try {
+                mfc.connect();
+                boolean auth;
+                String hexkey = "";
+                int selectedRadioButton = mAuthRadioGroup.getCheckedRadioButtonId();
+
+                //int sector = mfc.blockToSector(Integer.valueOf(mAccessSector.getText().toString()));
+                int sector = Integer.valueOf(mValueSector.getText().toString());
+                byte[] datakey;
+
+
+
+                if (selectedRadioButton == R.id.radioButtonKeyA){
+                    hexkey = mAuthKeyA.getText().toString();
+                    datakey = HexStringUtils.hexStringToByteArray(hexkey);
+                    auth = mfc.authenticateSectorWithKeyA(sector, datakey);
+                }else{
+                    hexkey = mAuthKeyB.getText().toString();
+                    datakey = HexStringUtils.hexStringToByteArray(hexkey);
+                    auth = mfc.authenticateSectorWithKeyB(sector, datakey);
+                }
+
+
+                if(auth){
+                    //Get block to read
+                    int blockRead = Integer.valueOf(mValueBlock.getText().toString());
+                    int bloque = Integer.valueOf(SectorBlockUtils.getAbsoluteBlock(sector, blockRead));
+                    //Read block from tag
+                    byte[] dataread = mfc.readBlock(bloque);
+                    //Get the first 4 bytes (this is where the value is stored)
+                    byte[] value =  Arrays.copyOfRange(dataread, 0, 4);
+
+                    System.out.println("VAL IS: "+HexStringUtils.getHexString(value, value.length));
+
+                    //Convert bits into strings
+                    String strData = Long.toString(HexStringUtils.byteArrayToInt(value));
+                    //Update UI with read data
+                    mValue.setText(strData);
+
+
+                    System.out.println("DATO LEIDO: "+dataread);
+
+                    //Notify the user that operation was successful
+                    Toast.makeText(this, "Lectura de bloque EXITOSA.", Toast.LENGTH_LONG).show();
+
+                    // Authentication failed
+                }else{
+                    Toast.makeText(this, "Lectura de bloque FALLIDA dado autentificación fallida.", Toast.LENGTH_LONG).show();
+                }
+
+                mfc.close();
+                mTagDialog.cancel();
+
+            }catch (IOException e) {
+                Log.e(TAG, e.getLocalizedMessage());
+            }
+
+
+
+        }
+    }
+
 
 
 
@@ -928,12 +1083,7 @@ void resolveReadAccessIntent(Intent intent) {
         }
     }
 
-    byte[] concatenateByteArrays(byte[] a, byte[] b) {
-        byte[] result = new byte[a.length + b.length];
-        System.arraycopy(a, 0, result, 0, a.length);
-        System.arraycopy(b, 0, result, a.length, b.length);
-        return result;
-    }
+
 
 
 }

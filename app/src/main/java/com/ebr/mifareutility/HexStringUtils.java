@@ -29,4 +29,15 @@ public class HexStringUtils {
         }
         return data;
     }
+
+    public static long byteArrayToInt(byte[] value){
+        long valueInt = 0;
+        for (int i = 0; i < value.length; i++)
+        {
+            valueInt += ((long) value[i] & 0xffL) << (8 * i);
+        }
+
+        return valueInt;
+
+    }
 }
