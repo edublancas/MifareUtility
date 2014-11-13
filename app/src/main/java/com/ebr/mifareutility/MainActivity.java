@@ -219,39 +219,14 @@ public class MainActivity extends Activity {
         @Override
         public void onClick(View arg0)
         {
-
             //Set auth flag to true
             enableTagAuthMode();
-
             //Prepare message
             Editable keyValue = (R.id.radioButtonKeyA == mAuthRadioGroup.getCheckedRadioButtonId() ? mAuthKeyA.getText() : mAuthKeyB.getText());
             String keyName = (R.id.radioButtonKeyA == mAuthRadioGroup.getCheckedRadioButtonId() ? "A" : "B");
             String msg = "Se va a autenticar el sector "+mAuthSector.getText()+" con la llave "+keyName+" ("+keyValue+")";
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(
-                    MainActivity.this)
-                    .setTitle(getString(R.string.ready_to_authenticate))
-                    .setMessage(msg)
-                    .setCancelable(true)
-                    .setNegativeButton("Cancelar",
-                            new DialogInterface.OnClickListener()
-                            {
-                                public void onClick(DialogInterface dialog,
-                                                    int id)
-                                {
-                                    dialog.cancel();
-                                }
-                            })
-                    .setOnCancelListener(new DialogInterface.OnCancelListener()
-                    {
-                        @Override
-                        public void onCancel(DialogInterface dialog)
-                        {
-                            enableTagReadUDIDMode();
-                        }
-                    });
-            mTagDialog = builder.create();
-            mTagDialog.show();
+            //Show message
+            showMessage("Operación de autenticación", msg);
         }
     };
 
@@ -268,31 +243,8 @@ public class MainActivity extends Activity {
             Editable keyValue = (R.id.radioButtonKeyA == mAuthRadioGroup.getCheckedRadioButtonId() ? mAuthKeyA.getText() : mAuthKeyB.getText());
             String keyName = (R.id.radioButtonKeyA == mAuthRadioGroup.getCheckedRadioButtonId() ? "A" : "B");
             String msg = "Se va a autenticar el bloque "+mIOBlock.getText()+" en el sector "+mIOSector.getText()+" con la llave "+keyName+" ("+keyValue+")";
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(
-                    MainActivity.this)
-                    .setTitle(getString(R.string.ready_to_read))
-                    .setMessage(msg)
-                    .setCancelable(true)
-                    .setNegativeButton("Cancelar",
-                            new DialogInterface.OnClickListener()
-                            {
-                                public void onClick(DialogInterface dialog,
-                                                    int id)
-                                {
-                                    dialog.cancel();
-                                }
-                            })
-                    .setOnCancelListener(new DialogInterface.OnCancelListener()
-                    {
-                        @Override
-                        public void onCancel(DialogInterface dialog)
-                        {
-                            enableTagReadUDIDMode();
-                        }
-                    });
-            mTagDialog = builder.create();
-            mTagDialog.show();
+            //Show message
+            showMessage("Operación de lectura de bloque", msg);
         }
     };
 
@@ -303,39 +255,12 @@ public class MainActivity extends Activity {
         @Override
         public void onClick(View arg0)
         {
-
             enableTagWriteMode();
-
             Editable keyValue = (R.id.radioButtonKeyA == mAuthRadioGroup.getCheckedRadioButtonId() ? mAuthKeyA.getText() : mAuthKeyB.getText());
             String keyName = (R.id.radioButtonKeyA == mAuthRadioGroup.getCheckedRadioButtonId() ? "A" : "B");
             String msg = "Se va a autenticar el bloque "+mIOBlock.getText()+" en el sector "+mIOSector.getText()+" con la llave "+keyName+" ("+keyValue+")";
-
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(
-                    MainActivity.this)
-                    .setTitle(getString(R.string.ready_to_write))
-                    .setMessage(msg)
-                    .setCancelable(true)
-                    .setNegativeButton("Cancelar",
-                            new DialogInterface.OnClickListener()
-                            {
-                                public void onClick(DialogInterface dialog,
-                                                    int id)
-                                {
-                                    dialog.cancel();
-                                }
-                            })
-                    .setOnCancelListener(new DialogInterface.OnCancelListener()
-                    {
-                        @Override
-                        public void onCancel(DialogInterface dialog)
-                        {
-                            enableTagReadUDIDMode();
-                        }
-                    });
-
-            mTagDialog = builder.create();
-            mTagDialog.show();
+            //Show message
+            showMessage("Operación de escritura de bloque", msg);
         }
     };
 
@@ -346,40 +271,12 @@ public class MainActivity extends Activity {
         @Override
         public void onClick(View arg0)
         {
-
             enableReadAccessMode();
-
             Editable keyValue = (R.id.radioButtonKeyA == mAuthRadioGroup.getCheckedRadioButtonId() ? mAuthKeyA.getText() : mAuthKeyB.getText());
             String keyName = (R.id.radioButtonKeyA == mAuthRadioGroup.getCheckedRadioButtonId() ? "A" : "B");
             String msg = "Leer accesos: Se va a autenticar el bloque "+mIOBlock.getText()+" en el sector "+mAccessSector.getText()+" con la llave "+keyName+" ("+keyValue+")";
-
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(
-                    MainActivity.this)
-                    .setTitle(getString(R.string.ready_to_write))
-                    .setMessage(msg)
-                    .setCancelable(true)
-                    .setNegativeButton("Cancelar",
-                            new DialogInterface.OnClickListener()
-                            {
-                                public void onClick(DialogInterface dialog,
-                                                    int id)
-                                {
-                                    dialog.cancel();
-                                }
-                            })
-                    .setOnCancelListener(new DialogInterface.OnCancelListener()
-                    {
-                        @Override
-                        public void onCancel(DialogInterface dialog)
-                        {
-                            enableTagReadUDIDMode();
-                        }
-                    });
-
-            mTagDialog = builder.create();
-            mTagDialog.show();
-
+            //Show message
+            showMessage("Operación de lectura de accesos", msg);
 
         }
     };
@@ -395,33 +292,8 @@ public class MainActivity extends Activity {
             Editable keyValue = (R.id.radioButtonKeyA == mAuthRadioGroup.getCheckedRadioButtonId() ? mAuthKeyA.getText() : mAuthKeyB.getText());
             String keyName = (R.id.radioButtonKeyA == mAuthRadioGroup.getCheckedRadioButtonId() ? "A" : "B");
             String msg = "ESCRIBIR ACCESOS: Se va a autenticar el bloque "+mIOBlock.getText()+" en el sector "+mIOSector.getText()+" con la llave "+keyName+" ("+keyValue+")";
-
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(
-                    MainActivity.this)
-                    .setTitle(getString(R.string.ready_to_write))
-                    .setMessage(msg)
-                    .setCancelable(true)
-                    .setNegativeButton("Cancelar",
-                            new DialogInterface.OnClickListener()
-                            {
-                                public void onClick(DialogInterface dialog,
-                                                    int id)
-                                {
-                                    dialog.cancel();
-                                }
-                            })
-                    .setOnCancelListener(new DialogInterface.OnCancelListener()
-                    {
-                        @Override
-                        public void onCancel(DialogInterface dialog)
-                        {
-                            enableTagReadUDIDMode();
-                        }
-                    });
-
-            mTagDialog = builder.create();
-            mTagDialog.show();
+            //Show message
+            showMessage("Operación de escritura de accesos", msg);
         }
     };
 
@@ -436,33 +308,8 @@ public class MainActivity extends Activity {
             Editable keyValue = (R.id.radioButtonKeyA == mAuthRadioGroup.getCheckedRadioButtonId() ? mAuthKeyA.getText() : mAuthKeyB.getText());
             String keyName = (R.id.radioButtonKeyA == mAuthRadioGroup.getCheckedRadioButtonId() ? "A" : "B");
             String msg = "LEER VALOR: Se va a autenticar el bloque "+mIOBlock.getText()+" en el sector "+mIOSector.getText()+" con la llave "+keyName+" ("+keyValue+")";
-
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(
-                    MainActivity.this)
-                    .setTitle(getString(R.string.ready_to_write))
-                    .setMessage(msg)
-                    .setCancelable(true)
-                    .setNegativeButton("Cancelar",
-                            new DialogInterface.OnClickListener()
-                            {
-                                public void onClick(DialogInterface dialog,
-                                                    int id)
-                                {
-                                    dialog.cancel();
-                                }
-                            })
-                    .setOnCancelListener(new DialogInterface.OnCancelListener()
-                    {
-                        @Override
-                        public void onCancel(DialogInterface dialog)
-                        {
-                            enableTagReadUDIDMode();
-                        }
-                    });
-
-            mTagDialog = builder.create();
-            mTagDialog.show();
+            //Show message
+            showMessage("Operación de lectura de valor", msg);
         }
     };
 
@@ -476,39 +323,10 @@ public class MainActivity extends Activity {
             Editable keyValue = (R.id.radioButtonKeyA == mAuthRadioGroup.getCheckedRadioButtonId() ? mAuthKeyA.getText() : mAuthKeyB.getText());
             String keyName = (R.id.radioButtonKeyA == mAuthRadioGroup.getCheckedRadioButtonId() ? "A" : "B");
             String msg = "ESCRIBIR VALOR: Se va a autenticar el bloque "+mIOBlock.getText()+" en el sector "+mIOSector.getText()+" con la llave "+keyName+" ("+keyValue+")";
-
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(
-                    MainActivity.this)
-                    .setTitle(getString(R.string.ready_to_write))
-                    .setMessage(msg)
-                    .setCancelable(true)
-                    .setNegativeButton("Cancelar",
-                            new DialogInterface.OnClickListener()
-                            {
-                                public void onClick(DialogInterface dialog,
-                                                    int id)
-                                {
-                                    dialog.cancel();
-                                }
-                            })
-                    .setOnCancelListener(new DialogInterface.OnCancelListener()
-                    {
-                        @Override
-                        public void onCancel(DialogInterface dialog)
-                        {
-                            enableTagReadUDIDMode();
-                        }
-                    });
-
-            mTagDialog = builder.create();
-            mTagDialog.show();
-
-
+            //Show message
+            showMessage("Operación de escritura de valor", msg);
         }
     };
-
-
 
 
     /*
@@ -1188,14 +1006,11 @@ void resolveReadAccessIntent(Intent intent) {
         }
     }
 
-    private void buildMessage(String msg){
+    private void showMessage(String title, String msg){
         //Prepare message
-        Editable keyValue = (R.id.radioButtonKeyA == mAuthRadioGroup.getCheckedRadioButtonId() ? mAuthKeyA.getText() : mAuthKeyB.getText());
-        String keyName = (R.id.radioButtonKeyA == mAuthRadioGroup.getCheckedRadioButtonId() ? "A" : "B");
-
         AlertDialog.Builder builder = new AlertDialog.Builder(
                 MainActivity.this)
-                .setTitle(getString(R.string.ready_to_read))
+                .setTitle(title)
                 .setMessage(msg)
                 .setCancelable(true)
                 .setNegativeButton("Cancelar",
