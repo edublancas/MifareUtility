@@ -26,7 +26,7 @@ import android.widget.Toast;
 public class MainActivity extends Activity {
 
 
-    private static final String TAG = "Mifare";
+    private static final String TAG = "MifareUtility";
 
     // NFC-related variables
     NfcAdapter mNfcAdapter;
@@ -50,7 +50,6 @@ public class MainActivity extends Activity {
 
     //Mode variable
     private Mode  currentMode = Mode.INFOMODE;
-    private boolean ReadUIDMode = true;
 
     // UI elements on AUTH TAB
     EditText mAuthKeyA;
@@ -213,7 +212,6 @@ public class MainActivity extends Activity {
     METHODS TRIGGERED BY BUTTONS - SET FLAG TO CURRENT ACTION
 
     */
-
 
     //User wants to authenticate
     private View.OnClickListener mTagAuthenticate = new View.OnClickListener()
@@ -571,6 +569,19 @@ public class MainActivity extends Activity {
                 mReadWriteTagFilters, mTechList);
     }
 
+    private void enableIncrementValueMode(){
+        currentMode = Mode.INCREMENTVALUEMODE;
+        mNfcAdapter.enableForegroundDispatch(this, mNfcPendingIntent,
+                mReadWriteTagFilters, mTechList);
+    }
+
+    private void enableDecrementValueMode(){
+        currentMode = Mode.DECREMENTVALUEMODE;
+        mNfcAdapter.enableForegroundDispatch(this, mNfcPendingIntent,
+                mReadWriteTagFilters, mTechList);
+    }
+
+
 
 
     /*
@@ -631,7 +642,7 @@ public class MainActivity extends Activity {
             Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             MifareClassic mfc = MifareClassic.get(tagFromIntent);
 
-            if (ReadUIDMode)
+            if (currentMode==Mode.INFOMODE)
             {
                 String tipotag = "";
                 String tamano = "";
@@ -1175,6 +1186,38 @@ void resolveReadAccessIntent(Intent intent) {
                                 }
                             }).create().show();
         }
+    }
+
+    private void buildMessage(String msg){
+        //Prepare message
+        Editable keyValue = (R.id.radioButtonKeyA == mAuthRadioGroup.getCheckedRadioButtonId() ? mAuthKeyA.getText() : mAuthKeyB.getText());
+        String keyName = (R.id.radioButtonKeyA == mAuthRadioGroup.getCheckedRadioButtonId() ? "A" : "B");
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(
+                MainActivity.this)
+                .setTitle(getString(R.string.ready_to_read))
+                .setMessage(msg)
+                .setCancelable(true)
+                .setNegativeButton("Cancelar",
+                        new DialogInterface.OnClickListener()
+                        {
+                            public void onClick(DialogInterface dialog,
+                                                int id)
+                            {
+                                dialog.cancel();
+                            }
+                        })
+                .setOnCancelListener(new DialogInterface.OnCancelListener()
+                {
+                    @Override
+                    public void onCancel(DialogInterface dialog)
+                    {
+                        enableTagReadUDIDMode();
+                    }
+                });
+        mTagDialog = builder.create();
+        mTagDialog.show();
+
     }
 
 
