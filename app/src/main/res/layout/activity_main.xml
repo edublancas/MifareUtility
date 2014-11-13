@@ -66,19 +66,19 @@
                 android:layout_height="wrap_content"
                 android:inputType="number"
                 android:ems="10"
-                android:id="@+id/editText" />
+                android:id="@+id/editTextIncrementDecrement" />
 
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Incremento"
-                android:id="@+id/button" />
+                android:id="@+id/buttonValueIncrement" />
 
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Decremento"
-                android:id="@+id/button2" />
+                android:id="@+id/buttonValueDecrement" />
 
             <TextView
                 android:layout_width="match_parent"

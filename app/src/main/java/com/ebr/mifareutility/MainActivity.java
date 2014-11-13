@@ -73,6 +73,7 @@ public class MainActivity extends Activity {
     EditText mValueSector;
     EditText mValueBlock;
     EditText mValue;
+    EditText mIncrementDecrement;
 
     //Dialog element
     AlertDialog mTagDialog;
@@ -144,9 +145,12 @@ public class MainActivity extends Activity {
         mValueSector = ((EditText) findViewById(R.id.editTextValueSector));
         mValueBlock = ((EditText) findViewById(R.id.editTextValueBlock));
         mValue = ((EditText) findViewById(R.id.editTextValue));
+        mIncrementDecrement = ((EditText) findViewById(R.id.editTextIncrementDecrement));
         //Click listener for button (VALUE tab)
         findViewById(R.id.buttonValueRead).setOnClickListener(mTagReadValue);
         findViewById(R.id.buttonValueWrite).setOnClickListener(mTagWriteValue);
+        findViewById(R.id.buttonValueIncrement).setOnClickListener(mTagIncrementValue);
+        findViewById(R.id.buttonValueDecrement).setOnClickListener(mTagDecrementValue);
 
         /*
         mTagUID = ((EditText) findViewById(R.id.tag_uid));
@@ -328,6 +332,36 @@ public class MainActivity extends Activity {
         }
     };
 
+    //User wants to increment a value
+    private View.OnClickListener mTagIncrementValue = new View.OnClickListener()
+    {
+        @Override
+        public void onClick(View arg0) {
+            enableIncrementValueMode();
+            Editable keyValue = (R.id.radioButtonKeyA == mAuthRadioGroup.getCheckedRadioButtonId() ? mAuthKeyA.getText() : mAuthKeyB.getText());
+            String keyName = (R.id.radioButtonKeyA == mAuthRadioGroup.getCheckedRadioButtonId() ? "A" : "B");
+            String msg = "Se va a autenticar el bloque "+mIOBlock.getText()+" en el sector "+mIOSector.getText()+" con la llave "+keyName+" ("+keyValue+")";
+            //Show message
+            showMessage("Operación de incremento de valor", msg);
+        }
+    };
+
+
+    //User wants to decrement a value
+    private View.OnClickListener mTagDecrementValue = new View.OnClickListener()
+    {
+        @Override
+        public void onClick(View arg0) {
+            enableDecrementValueMode();
+            Editable keyValue = (R.id.radioButtonKeyA == mAuthRadioGroup.getCheckedRadioButtonId() ? mAuthKeyA.getText() : mAuthKeyB.getText());
+            String keyName = (R.id.radioButtonKeyA == mAuthRadioGroup.getCheckedRadioButtonId() ? "A" : "B");
+            String msg = "Se va a autenticar el bloque "+mIOBlock.getText()+" en el sector "+mIOSector.getText()+" con la llave "+keyName+" ("+keyValue+")";
+            //Show message
+            showMessage("Operación de decremento de valor", msg);
+        }
+    };
+
+
 
     /*
         FLAG SETTERS
@@ -441,10 +475,11 @@ public class MainActivity extends Activity {
                 resolveWriteValueIntent(intent);
                 break;
             case INCREMENTVALUEMODE:
-                //Not supported yet
+                resolveIncrementValueIntent(intent);
                 break;
             case DECREMENTVALUEMODE:
                 //Not supported yet
+                resolveDecrementValueIntent(intent);
                 break;
         }
 
@@ -883,9 +918,6 @@ void resolveReadAccessIntent(Intent intent) {
 
     //Write value intent
     void resolveWriteValueIntent(Intent intent) {
-        System.out.println("HACIENDO COMO QUE ESCRIBO...");
-
-
         String action = intent.getAction();
         if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)) {
             Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
@@ -950,6 +982,130 @@ void resolveReadAccessIntent(Intent intent) {
 
 
     }
+
+
+    void resolveIncrementValueIntent(Intent intent) {
+        String action = intent.getAction();
+        if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)) {
+            Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+            MifareClassic mfc = MifareClassic.get(tagFromIntent);
+
+            try {
+                mfc.connect();
+                boolean auth;
+                String hexkey = "";
+                int selectedRadioButton = mAuthRadioGroup.getCheckedRadioButtonId();
+
+                //int sector = mfc.blockToSector(Integer.valueOf(mAccessSector.getText().toString()));
+                int sector = Integer.valueOf(mValueSector.getText().toString());
+                byte[] datakey;
+
+
+
+                if (selectedRadioButton == R.id.radioButtonKeyA){
+                    hexkey = mAuthKeyA.getText().toString();
+                    datakey = HexStringUtils.hexStringToByteArray(hexkey);
+                    auth = mfc.authenticateSectorWithKeyA(sector, datakey);
+                }else{
+                    hexkey = mAuthKeyB.getText().toString();
+                    datakey = HexStringUtils.hexStringToByteArray(hexkey);
+                    auth = mfc.authenticateSectorWithKeyB(sector, datakey);
+                }
+
+
+                if(auth){
+                    //Get block entered by the user
+                    int blockRead = Integer.valueOf(mValueBlock.getText().toString());
+                    //Convert to absolute block direction
+                    int block = Integer.valueOf(SectorBlockUtils.getAbsoluteBlock(sector, blockRead));
+                    //Get value to increment
+                    int valueToIncrement = Integer.valueOf(mIncrementDecrement.getText().toString());
+                    //Increment value in block
+                    mfc.increment(block, valueToIncrement);
+
+                    //Notify the user that operation was successful
+                    Toast.makeText(this, "Incremento de bloque EXITOSA.", Toast.LENGTH_LONG).show();
+
+                    // Authentication failed
+                }else{
+                    Toast.makeText(this, "Incremento de bloque FALLIDA dado autentificación fallida.", Toast.LENGTH_LONG).show();
+                }
+
+                mfc.close();
+                mTagDialog.cancel();
+
+            }catch (IOException e) {
+                Log.e(TAG, e.getLocalizedMessage());
+            }
+
+
+
+        }
+
+
+    }
+
+    void resolveDecrementValueIntent(Intent intent) {
+        String action = intent.getAction();
+        if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)) {
+            Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+            MifareClassic mfc = MifareClassic.get(tagFromIntent);
+
+            try {
+                mfc.connect();
+                boolean auth;
+                String hexkey = "";
+                int selectedRadioButton = mAuthRadioGroup.getCheckedRadioButtonId();
+
+                //int sector = mfc.blockToSector(Integer.valueOf(mAccessSector.getText().toString()));
+                int sector = Integer.valueOf(mValueSector.getText().toString());
+                byte[] datakey;
+
+
+
+                if (selectedRadioButton == R.id.radioButtonKeyA){
+                    hexkey = mAuthKeyA.getText().toString();
+                    datakey = HexStringUtils.hexStringToByteArray(hexkey);
+                    auth = mfc.authenticateSectorWithKeyA(sector, datakey);
+                }else{
+                    hexkey = mAuthKeyB.getText().toString();
+                    datakey = HexStringUtils.hexStringToByteArray(hexkey);
+                    auth = mfc.authenticateSectorWithKeyB(sector, datakey);
+                }
+
+
+                if(auth){
+                    //Get block entered by the user
+                    int blockRead = Integer.valueOf(mValueBlock.getText().toString());
+                    //Convert to absolute block direction
+                    int block = Integer.valueOf(SectorBlockUtils.getAbsoluteBlock(sector, blockRead));
+                    //Get value to decrement
+                    int valueToDecrement= -Integer.valueOf(mIncrementDecrement.getText().toString());
+                    //Increment value in block
+                    mfc.increment(block, valueToDecrement);
+
+                    //Notify the user that operation was successful
+                    Toast.makeText(this, "Incremento de bloque EXITOSA.", Toast.LENGTH_LONG).show();
+
+                    // Authentication failed
+                }else{
+                    Toast.makeText(this, "Incremento de bloque FALLIDA dado autentificación fallida.", Toast.LENGTH_LONG).show();
+                }
+
+                mfc.close();
+                mTagDialog.cancel();
+
+            }catch (IOException e) {
+                Log.e(TAG, e.getLocalizedMessage());
+            }
+
+
+
+        }
+
+
+    }
+
 
 
 

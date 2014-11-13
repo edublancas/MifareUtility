@@ -9,10 +9,9 @@ import java.util.Locale;
 
 public class AlgoritmoByte {
 
-    /**
-     * @param args the command line arguments
-     */
-    public static byte[] main(String[] args) {
+
+
+    public static void main (String[] args) {
         int valor = 789;
         byte direccion = 5;
 
@@ -20,17 +19,46 @@ public class AlgoritmoByte {
         byte direccionn = (byte)~direccion;
 
 
+        String valorS = formato(limita(Integer.toHexString(valor)));
+        String valornS = formato(limita(Integer.toHexString(valorn)));
+        String direccionS = limita2(Integer.toHexString(direccion));
+        String direccionNS = limita2(Integer.toHexString(direccionn));
 
-        System.out.println(Integer.toHexString(valorn));
+
+
+
+
+        System.out.println(valorS);
+
+        System.out.println(formato(valorS));
         System.out.println(limita(Integer.toHexString(valorn)));
         System.out.println(Integer.toHexString(direccion));
         System.out.println(Integer.toHexString(direccionn));
         //System.out.println(valorStringn);
 
+        String buena=valorS+valornS+valorS+direccionS+direccionNS+direccionS+direccionNS;
 
 
-        System.out.println(reverse(limita(Integer.toHexString(valor)))+reverse(limita(Integer.toHexString(valorn)))+reverse(limita(Integer.toHexString(valor)))+reverse(limita2(Integer.toHexString(direccion)))+reverse(limita2(Integer.toHexString(direccionn)))+reverse(limita2(Integer.toHexString(direccion)))+reverse(limita2(Integer.toHexString(direccionn))));
-        return hexStringToByteArray(reverse(limita(Integer.toHexString(valor)))+reverse(limita(Integer.toHexString(valorn)))+reverse(limita(Integer.toHexString(valor)))+reverse(limita2(Integer.toHexString(direccion)))+reverse(limita2(Integer.toHexString(direccionn)))+reverse(limita2(Integer.toHexString(direccion)))+reverse(limita2(Integer.toHexString(direccionn))));
+        System.out.println(buena);
+
+
+    }
+
+
+    public static String formato ( String valor){
+
+        String buena="";
+
+        for (int i=valor.length();i>=2;i-=2){
+
+            buena +=valor.substring(i-2,i);
+
+
+
+        }
+
+        return buena;
+
 
     }
 
@@ -50,9 +78,14 @@ public class AlgoritmoByte {
     public static byte[] magia(int valor, byte direccion ){
         int valorn = (int)~valor;
         byte direccionn = (byte)~direccion;
-        return hexStringToByteArray(reverse(limita(Integer.toHexString(valor)))+reverse(limita(Integer.toHexString(valorn)))+reverse(limita(Integer.toHexString(valor)))+reverse(limita2(Integer.toHexString(direccion)))+reverse(limita2(Integer.toHexString(direccionn)))+reverse(limita2(Integer.toHexString(direccion)))+reverse(limita2(Integer.toHexString(direccionn))));
+        String valorS = formato(limita(Integer.toHexString(valor)));
+        String valornS = formato(limita(Integer.toHexString(valorn)));
+        String direccionS = limita2(Integer.toHexString(direccion));
+        String direccionNS = limita2(Integer.toHexString(direccionn));
 
-
+        String buena=valorS+valornS+valorS+direccionS+direccionNS+direccionS+direccionNS;
+        byte[] buenaByte = hexStringToByteArray(buena);
+        return buenaByte;
 
     }
 
@@ -119,10 +152,3 @@ public class AlgoritmoByte {
         return new String(in);
     }
 }
-
-
-
-
-
-
-
