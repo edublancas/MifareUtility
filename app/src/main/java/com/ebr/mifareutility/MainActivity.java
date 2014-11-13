@@ -918,6 +918,7 @@ void resolveReadAccessIntent(Intent intent) {
 
     //Write value intent
     void resolveWriteValueIntent(Intent intent) {
+        System.out.println("COMenzando operacion de escritura de valor");
         String action = intent.getAction();
         if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)) {
             Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
@@ -1020,8 +1021,10 @@ void resolveReadAccessIntent(Intent intent) {
                     int block = Integer.valueOf(SectorBlockUtils.getAbsoluteBlock(sector, blockRead));
                     //Get value to increment
                     int valueToIncrement = Integer.valueOf(mIncrementDecrement.getText().toString());
-                    //Increment value in block
+                    //Increment value in block and store it on tmp block
                     mfc.increment(block, valueToIncrement);
+                    //Transfer value from tmp block to block selected by user
+                    mfc.transfer(block);
 
                     //Notify the user that operation was successful
                     Toast.makeText(this, "Incremento de bloque EXITOSA.", Toast.LENGTH_LONG).show();
@@ -1080,12 +1083,14 @@ void resolveReadAccessIntent(Intent intent) {
                     //Convert to absolute block direction
                     int block = Integer.valueOf(SectorBlockUtils.getAbsoluteBlock(sector, blockRead));
                     //Get value to decrement
-                    int valueToDecrement= -Integer.valueOf(mIncrementDecrement.getText().toString());
-                    //Increment value in block
-                    mfc.increment(block, valueToDecrement);
+                    int valueToDecrement = Integer.valueOf(mIncrementDecrement.getText().toString());
+                    //Decrement value in block and store it on tmp block
+                    mfc.decrement(block, valueToDecrement);
+                    //Transfer value from tmp block to block selected by user
+                    mfc.transfer(block);
 
                     //Notify the user that operation was successful
-                    Toast.makeText(this, "Incremento de bloque EXITOSA.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "Decremento de bloque EXITOSA.", Toast.LENGTH_LONG).show();
 
                     // Authentication failed
                 }else{

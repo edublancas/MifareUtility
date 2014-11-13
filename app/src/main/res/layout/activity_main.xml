@@ -193,9 +193,14 @@
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="number"
                 android:ems="10"
-                android:id="@+id/editTextAccessBits" />
+                android:id="@+id/editTextAccessBits"
+                android:digits="0123456789ABCDEF"
+                android:hint="@string/hex_string"
+                android:imeOptions="actionDone"
+                android:inputType="textCapCharacters|text|textNoSuggestions"
+                android:maxLength="8"
+            />
 
             <TextView
                 android:layout_width="match_parent"
