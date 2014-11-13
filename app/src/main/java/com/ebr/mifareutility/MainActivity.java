@@ -44,13 +44,12 @@ public class MainActivity extends Activity {
         WRITEACCESSMODE,
         READVALUEMODE,
         WRITEVALUEMODE,
+        INCREMENTVALUEMODE,
+        DECREMENTVALUEMODE,
     }
 
     //Mode variable
     private Mode  currentMode = Mode.INFOMODE;
-
-    private boolean mWriteMode = false;
-    private boolean mAuthenticationMode = false;
     private boolean ReadUIDMode = true;
 
     // UI elements on AUTH TAB
@@ -250,7 +249,7 @@ public class MainActivity extends Activity {
                         @Override
                         public void onCancel(DialogInterface dialog)
                         {
-                            mAuthenticationMode = false;
+                            enableTagReadUDIDMode();
                         }
                     });
             mTagDialog = builder.create();
@@ -267,8 +266,6 @@ public class MainActivity extends Activity {
         {
 
             enableTagReadMode();
-            ReadUIDMode = false;
-
             //Prepare message
             Editable keyValue = (R.id.radioButtonKeyA == mAuthRadioGroup.getCheckedRadioButtonId() ? mAuthKeyA.getText() : mAuthKeyB.getText());
             String keyName = (R.id.radioButtonKeyA == mAuthRadioGroup.getCheckedRadioButtonId() ? "A" : "B");
@@ -293,8 +290,7 @@ public class MainActivity extends Activity {
                         @Override
                         public void onCancel(DialogInterface dialog)
                         {
-                            enableTagReadMode();
-                            ReadUIDMode = true;
+                            enableTagReadUDIDMode();
                         }
                     });
             mTagDialog = builder.create();
@@ -336,7 +332,7 @@ public class MainActivity extends Activity {
                         @Override
                         public void onCancel(DialogInterface dialog)
                         {
-                            enableTagReadMode();
+                            enableTagReadUDIDMode();
                         }
                     });
 
@@ -379,7 +375,7 @@ public class MainActivity extends Activity {
                         @Override
                         public void onCancel(DialogInterface dialog)
                         {
-                            enableTagReadMode();
+                            enableTagReadUDIDMode();
                         }
                     });
 
@@ -422,7 +418,7 @@ public class MainActivity extends Activity {
                         @Override
                         public void onCancel(DialogInterface dialog)
                         {
-                            enableTagReadMode();
+                            enableTagReadUDIDMode();
                         }
                     });
 
@@ -463,7 +459,7 @@ public class MainActivity extends Activity {
                         @Override
                         public void onCancel(DialogInterface dialog)
                         {
-                            enableTagReadMode();
+                            enableTagReadUDIDMode();
                         }
                     });
 
@@ -472,11 +468,45 @@ public class MainActivity extends Activity {
         }
     };
 
-    //User wants to read a value
+    //User wants to write a value
     private View.OnClickListener mTagWriteValue = new View.OnClickListener()
     {
         @Override
         public void onClick(View arg0) {
+            enableWriteValueMode();
+
+            Editable keyValue = (R.id.radioButtonKeyA == mAuthRadioGroup.getCheckedRadioButtonId() ? mAuthKeyA.getText() : mAuthKeyB.getText());
+            String keyName = (R.id.radioButtonKeyA == mAuthRadioGroup.getCheckedRadioButtonId() ? "A" : "B");
+            String msg = "ESCRIBIR VALOR: Se va a autenticar el bloque "+mIOBlock.getText()+" en el sector "+mIOSector.getText()+" con la llave "+keyName+" ("+keyValue+")";
+
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(
+                    MainActivity.this)
+                    .setTitle(getString(R.string.ready_to_write))
+                    .setMessage(msg)
+                    .setCancelable(true)
+                    .setNegativeButton("Cancelar",
+                            new DialogInterface.OnClickListener()
+                            {
+                                public void onClick(DialogInterface dialog,
+                                                    int id)
+                                {
+                                    dialog.cancel();
+                                }
+                            })
+                    .setOnCancelListener(new DialogInterface.OnCancelListener()
+                    {
+                        @Override
+                        public void onCancel(DialogInterface dialog)
+                        {
+                            enableTagReadUDIDMode();
+                        }
+                    });
+
+            mTagDialog = builder.create();
+            mTagDialog.show();
+
+
         }
     };
 
@@ -487,21 +517,23 @@ public class MainActivity extends Activity {
         FLAG SETTERS
      */
 
+    private void enableTagReadUDIDMode(){
+        currentMode = Mode.INFOMODE;
+        mNfcAdapter.enableForegroundDispatch(this, mNfcPendingIntent,
+                mReadWriteTagFilters, mTechList);
+    }
+
     //This mode lets the user know general information about the tag
     private void enableTagWriteMode()
     {
         currentMode = Mode.WRITEMODE;
-
-        mWriteMode = true;
         mNfcAdapter.enableForegroundDispatch(this, mNfcPendingIntent,
                 mReadWriteTagFilters, mTechList);
     }
 
     private void enableTagReadMode()
     {
-        currentMode = Mode.WRITEMODE;
-
-        mWriteMode = false;
+        currentMode = Mode.READMODE;
         mNfcAdapter.enableForegroundDispatch(this, mNfcPendingIntent,
                 mReadWriteTagFilters, mTechList);
     }
@@ -511,35 +543,33 @@ public class MainActivity extends Activity {
     {
 
         currentMode = Mode.AUTHMODE;
-
-        mAuthenticationMode = true;
         mNfcAdapter.enableForegroundDispatch(this, mNfcPendingIntent,
                 mReadWriteTagFilters, mTechList);
     }
 
     private void enableReadAccessMode(){
         currentMode = Mode.READACCESSMODE;
-
         mNfcAdapter.enableForegroundDispatch(this, mNfcPendingIntent,
                 mReadWriteTagFilters, mTechList);
-
     }
 
     private void enableWriteAccessMode(){
         currentMode = Mode.WRITEACCESSMODE;
-
         mNfcAdapter.enableForegroundDispatch(this, mNfcPendingIntent,
                 mReadWriteTagFilters, mTechList);
-
     }
 
     private void enableReadValueMode(){
         currentMode = Mode.READVALUEMODE;
-
         mNfcAdapter.enableForegroundDispatch(this, mNfcPendingIntent,
                 mReadWriteTagFilters, mTechList);
     }
 
+    private void enableWriteValueMode(){
+        currentMode = Mode.WRITEVALUEMODE;
+        mNfcAdapter.enableForegroundDispatch(this, mNfcPendingIntent,
+                mReadWriteTagFilters, mTechList);
+    }
 
 
 
@@ -555,48 +585,42 @@ public class MainActivity extends Activity {
         Log.d(TAG, "onNewIntent: " + intent);
         Log.i("Foreground dispatch", "Discovered tag with intent: " + intent);
 
-        if(currentMode==Mode.READACCESSMODE){
 
-            System.out.println("Leyendo accesos...");
-            resolveReadAccessIntent(intent);
-            mTagDialog.cancel();
-            return;
+        switch (currentMode){
+            case INFOMODE:
+                //No current support for info mode
+                break;
+            case AUTHMODE:
+                resolveAuthIntent(intent);
+                break;
+            case READMODE:
+                resolveReadIntent(intent);
+                break;
+            case WRITEMODE:
+                resolveWriteIntent(intent);
+                break;
+            case READACCESSMODE:
+                resolveReadAccessIntent(intent);
+                break;
+            case WRITEACCESSMODE:
+                resolveWriteAccessIntent(intent);
+                break;
+            case READVALUEMODE:
+                resolveReadValueIntent(intent);
+                break;
+            case WRITEVALUEMODE:
+                resolveWriteValueIntent(intent);
+                break;
+            case INCREMENTVALUEMODE:
+                //Not supported yet
+                break;
+            case DECREMENTVALUEMODE:
+                //Not supported yet
+                break;
         }
 
-        if(currentMode==Mode.WRITEACCESSMODE){
-
-            System.out.println("Escribiendo accesos...");
-            resolveWriteAccessIntent(intent);
-            mTagDialog.cancel();
-            return;
-        }
-
-        if(currentMode==Mode.READVALUEMODE){
-
-            System.out.println("Leyendo valor...");
-            resolveReadValueIntent(intent);
-            mTagDialog.cancel();
-            return;
-        }
-
-        //Based on the flags state, determine which action to take
-        if (mAuthenticationMode)
-        {
-            // Currently in tag AUTHENTICATION mode
-            resolveAuthIntent(intent);
-            mTagDialog.cancel();
-        }
-        else if (!mWriteMode)
-        {
-            // Currently in tag READING mode
-            resolveReadIntent(intent);
-        } else
-        {
-            // Currently in tag WRITING mode
-            resolveWriteIntent(intent);
-        }
-
-
+        //Hide dialog
+        mTagDialog.cancel();
     }
 
 
@@ -958,7 +982,7 @@ void resolveReadAccessIntent(Intent intent) {
     }
 }
 
-    //Read access intent
+    //Read value intent
     void resolveReadValueIntent(Intent intent) {
         String action = intent.getAction();
         if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)) {
@@ -997,6 +1021,7 @@ void resolveReadAccessIntent(Intent intent) {
                     //Get the first 4 bytes (this is where the value is stored)
                     byte[] value =  Arrays.copyOfRange(dataread, 0, 4);
 
+
                     System.out.println("VAL IS: "+HexStringUtils.getHexString(value, value.length));
 
                     //Convert bits into strings
@@ -1027,6 +1052,75 @@ void resolveReadAccessIntent(Intent intent) {
         }
     }
 
+    //Write value intent
+    void resolveWriteValueIntent(Intent intent) {
+        System.out.println("HACIENDO COMO QUE ESCRIBO...");
+
+
+        String action = intent.getAction();
+        if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)) {
+            Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+            MifareClassic mfc = MifareClassic.get(tagFromIntent);
+
+            try {
+                mfc.connect();
+                boolean auth;
+                String hexkey = "";
+                int selectedRadioButton = mAuthRadioGroup.getCheckedRadioButtonId();
+
+                //int sector = mfc.blockToSector(Integer.valueOf(mAccessSector.getText().toString()));
+                int sector = Integer.valueOf(mValueSector.getText().toString());
+                byte[] datakey;
+
+
+
+                if (selectedRadioButton == R.id.radioButtonKeyA){
+                    hexkey = mAuthKeyA.getText().toString();
+                    datakey = HexStringUtils.hexStringToByteArray(hexkey);
+                    auth = mfc.authenticateSectorWithKeyA(sector, datakey);
+                }else{
+                    hexkey = mAuthKeyB.getText().toString();
+                    datakey = HexStringUtils.hexStringToByteArray(hexkey);
+                    auth = mfc.authenticateSectorWithKeyB(sector, datakey);
+                }
+
+
+                if(auth){
+                    //Get block entered by the user
+                    int blockRead = Integer.valueOf(mValueBlock.getText().toString());
+                    //Convert to absolute block direction
+                    int block = Integer.valueOf(SectorBlockUtils.getAbsoluteBlock(sector, blockRead));
+
+
+                    //Read int from field
+                    int intValue = Integer.valueOf(mValue.getText().toString());
+                    //Convert to byte[]
+                    byte[] byteValue = AlgoritmoByte.magia(intValue, (byte)block);
+
+                    //Write to block
+                    mfc.writeBlock(block, byteValue);
+
+                    //Notify the user that operation was successful
+                    Toast.makeText(this, "Escritura de bloque EXITOSA.", Toast.LENGTH_LONG).show();
+
+                    // Authentication failed
+                }else{
+                    Toast.makeText(this, "Escritura de bloque FALLIDA dado autentificación fallida.", Toast.LENGTH_LONG).show();
+                }
+
+                mfc.close();
+                mTagDialog.cancel();
+
+            }catch (IOException e) {
+                Log.e(TAG, e.getLocalizedMessage());
+            }
+
+
+
+        }
+
+
+    }
 
 
 

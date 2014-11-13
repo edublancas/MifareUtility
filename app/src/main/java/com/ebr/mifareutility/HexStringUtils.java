@@ -40,4 +40,6 @@ public class HexStringUtils {
         return valueInt;
 
     }
+
+
 }
