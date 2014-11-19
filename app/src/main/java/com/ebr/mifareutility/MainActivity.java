@@ -4,6 +4,7 @@ package com.ebr.mifareutility;
 import java.io.IOException;
 import java.util.Arrays;
 
+import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.nfc.tech.MifareClassic;
 import android.nfc.Tag;
@@ -23,6 +24,7 @@ import android.widget.RadioGroup;
 import android.widget.TabHost;
 import android.widget.Toast;
 import android.view.Menu;
+import android.view.MenuItem;
 
 public class MainActivity extends Activity {
 
@@ -84,6 +86,43 @@ public class MainActivity extends Activity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
+    }
+
+
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_help:
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.github.com/edublancas"));
+                startActivity(browserIntent);
+                return true;
+            case R.id.menu_about:
+                showInfo();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+
+    //Show info about the app
+    private void showInfo(){
+        //Prepare message
+        AlertDialog.Builder builder = new AlertDialog.Builder(
+                MainActivity.this)
+                .setTitle("Acerca de")
+                .setMessage("Mifare Utility.")
+                .setCancelable(true)
+                .setNegativeButton("Cerrar",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,
+                                                int id) {
+                                dialog.cancel();
+                            }
+                        }
+                );
+        mTagDialog = builder.create();
+        mTagDialog.show();
     }
 
 
