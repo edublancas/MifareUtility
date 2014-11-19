@@ -111,7 +111,8 @@ public class MainActivity extends Activity {
         AlertDialog.Builder builder = new AlertDialog.Builder(
                 MainActivity.this)
                 .setTitle("Acerca de")
-                .setMessage("Mifare Utility.")
+                .setMessage("Mifare Utility. http://github.com/edublancas/MifareUtility. \n" +
+                        " By Richardo Industries el Ripagood , el PIPE y edublancas")
                 .setCancelable(true)
                 .setNegativeButton("Cerrar",
                         new DialogInterface.OnClickListener() {

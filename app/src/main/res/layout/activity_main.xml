@@ -199,7 +199,7 @@
                 android:hint="@string/hex_string"
                 android:imeOptions="actionDone"
                 android:inputType="textCapCharacters|text|textNoSuggestions"
-                android:maxLength="8"
+                android:maxLength="11"
             />
 
             <TextView

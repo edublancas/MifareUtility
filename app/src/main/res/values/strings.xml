@@ -24,7 +24,7 @@
     <string name="ready_to_write">Acerque su dispositivo al tag para comenzar la escritura</string>
     <string name="ready_to_read">Acerque su dispositivo al tag para comenzar la lectura</string>
 
-    <string name="menu_about">Acerca de Mifare Control</string>
+    <string name="menu_about">Acerca de Mifare Utility</string>
     <string name="menu_help">Ayuda</string>
     <string name="keyALabel">Introduzca la clave A</string>
     <string name="selectKeyLabel">Seleccione una llave para efectuar la operación</string>
