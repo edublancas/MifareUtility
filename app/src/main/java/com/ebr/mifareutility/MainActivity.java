@@ -22,6 +22,7 @@ import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.TabHost;
 import android.widget.Toast;
+import android.view.Menu;
 
 public class MainActivity extends Activity {
 
@@ -78,9 +79,12 @@ public class MainActivity extends Activity {
     //Dialog element
     AlertDialog mTagDialog;
 
-
-    EditText mTagUID;
-    EditText mCardType;
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
 
 
     @Override
@@ -152,11 +156,6 @@ public class MainActivity extends Activity {
         findViewById(R.id.buttonValueIncrement).setOnClickListener(mTagIncrementValue);
         findViewById(R.id.buttonValueDecrement).setOnClickListener(mTagDecrementValue);
 
-        /*
-        mTagUID = ((EditText) findViewById(R.id.tag_uid));
-        mCardType = ((EditText) findViewById(R.id.cardtype));
-        */
-
 
         //Get a reference to the NFC adapter
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
@@ -192,16 +191,7 @@ public class MainActivity extends Activity {
             throw new RuntimeException("No se pudo añadir un tipo MIME.", e);
         }
 
-        // Create intent filter to detect any MIFARE NFC tag when attempting to write
-        // to a tag in "write mode"
-        //IntentFilter tagDetected = new IntentFilter(
-        //         NfcAdapter.ACTION_TAG_DISCOVERED);
-
-        // create IntentFilter arrays:
-        //mWriteTagFilters = new IntentFilter[] { tagDetected };
         mReadWriteTagFilters = new IntentFilter[] { mifareDetected };
-
-
         // Setup a tech list for all NfcF tags
         mTechList = new String[][] { new String[] { MifareClassic.class.getName() } };
 
@@ -210,10 +200,9 @@ public class MainActivity extends Activity {
     }
 
 
-
     /*
 
-    METHODS TRIGGERED BY BUTTONS - SET FLAG TO CURRENT ACTION
+    METHODS TRIGGERED BY BUTTONS - Enable appropiate mode and show a message
 
     */
 
@@ -373,7 +362,7 @@ public class MainActivity extends Activity {
                 mReadWriteTagFilters, mTechList);
     }
 
-    //This mode lets the user know general information about the tag
+
     private void enableTagWriteMode()
     {
         currentMode = Mode.WRITEMODE;
@@ -503,9 +492,11 @@ public class MainActivity extends Activity {
                 String hexUID = HexStringUtils.getHexString(tagUID, tagUID.length);
                 Log.i(TAG, "Tag UID: " + hexUID);
 
+                /*
                 Editable UIDField = mTagUID.getText();
                 UIDField.clear();
                 UIDField.append(hexUID);
+                */
 
                 switch(mfc.getType())
                 {
@@ -526,9 +517,11 @@ public class MainActivity extends Activity {
 
                 Log.i(TAG, "Card Type: " + tipotag + tamano);
 
+                /*
                 Editable CardtypeField = mCardType.getText();
                 CardtypeField.clear();
                 CardtypeField.append(tipotag + tamano);
+                */
 
             } else
             {
@@ -537,16 +530,8 @@ public class MainActivity extends Activity {
                     boolean auth;
                     String hexkey = "";
                     int selectedRadioButton = mAuthRadioGroup.getCheckedRadioButtonId();
-
-
-
                     int sector = Integer.valueOf(mIOSector.getText().toString());
-
-
-                    //int sector = mfc.blockToSector(Integer.valueOf(mIOBlock.getText().toString()));
                     byte[] datakey;
-
-
 
                     if (selectedRadioButton == R.id.radioButtonKeyA){
                         hexkey = mAuthKeyA.getText().toString();
@@ -561,19 +546,14 @@ public class MainActivity extends Activity {
 
                     if(auth){
                         //Get block to read (convert to 0-3 value)
-                        //int bloque = Integer.valueOf(mIOBlock.getText().toString());
                         int readBlock = Integer.valueOf(mIOBlock.getText().toString());
                         int bloque = Integer.valueOf(SectorBlockUtils.getAbsoluteBlock(sector, readBlock));
-
-
                         //Read block from tag
                         byte[] dataread = mfc.readBlock(bloque);
-
                         //Convert block into string
                         String blockread = HexStringUtils.getHexString(dataread, dataread.length);
                         //Update UI with read data
                         mIOResult.setText(blockread);
-
                         Log.i(TAG, "Bloque Leido: " + blockread);
                         Toast.makeText(this,"Lectura de bloque EXITOSA.", Toast.LENGTH_LONG).show();
 
@@ -605,8 +585,6 @@ public class MainActivity extends Activity {
                 boolean auth;
                 String hexkey = "";
                 int id = mAuthRadioGroup.getCheckedRadioButtonId();
-                //int bloque = Integer.valueOf(mIOBlock.getText().toString());
-                //int sector = mfc.blockToSector(bloque);
 
                 int sector = Integer.valueOf(mIOSector.getText().toString());
                 int readBlock = Integer.valueOf(mIOBlock.getText().toString());
@@ -630,19 +608,13 @@ public class MainActivity extends Activity {
 
 
                 if(auth){
-                    //String strdata = mDatatoWrite.getText().toString();
-
                     //Get data from user, strip spaces
                     String strdata = mIOResult.getText().toString().replaceAll("\\s+","");
-
                     //Convert it to byte array
                     byte[] datatowrite = HexStringUtils.hexStringToByteArray(strdata);
                     //Write block
                     mfc.writeBlock(bloque, datatowrite);
-
                     Toast.makeText(this,"Escritura a bloque EXITOSA.",Toast.LENGTH_LONG).show();
-
-
                 }else{ // Authentication failed - Handle it
                     Toast.makeText(this,"Escritura a bloque FALLIDA dado autentificación fallida.",Toast.LENGTH_LONG).show();
                 }
@@ -709,9 +681,6 @@ public class MainActivity extends Activity {
                 String hexkey = "";
                 int id = mAuthRadioGroup.getCheckedRadioButtonId();
 
-                //int bloque = 3; //ACCESS is always on block 3
-                //int sector = mfc.blockToSector(bloque);
-
                 int sector = Integer.valueOf(mAccessSector.getText().toString());
                 int bloque = Integer.valueOf(SectorBlockUtils.getAbsoluteBlock(sector, 3));
 
@@ -740,10 +709,6 @@ public class MainActivity extends Activity {
 
                     System.out.println("SE VA A ESCRIBIR. A:"+keyAString+" B "+keyBString+" Access:"+accessBits);
 
-                    /*byte[] keyA = HexStringUtils.hexStringToByteArray(keyAString);
-                    byte[] keyB = HexStringUtils.hexStringToByteArray(keyBString);
-                    byte[] access = HexStringUtils.hexStringToByteArray(accessBits);
-                    */
 
                     byte[] dataToWrite = HexStringUtils.hexStringToByteArray(stringToWrite);
 
@@ -1064,8 +1029,6 @@ void resolveReadAccessIntent(Intent intent) {
                 int sector = Integer.valueOf(mValueSector.getText().toString());
                 byte[] datakey;
 
-
-
                 if (selectedRadioButton == R.id.radioButtonKeyA){
                     hexkey = mAuthKeyA.getText().toString();
                     datakey = HexStringUtils.hexStringToByteArray(hexkey);
@@ -1145,6 +1108,7 @@ void resolveReadAccessIntent(Intent intent) {
      * **** HELPER METHODS ****
      */
 
+    //Check if device has NFC enable
     private void checkNfcEnabled()
     {
         Boolean nfcEnabled = mNfcAdapter.isEnabled();
@@ -1167,6 +1131,8 @@ void resolveReadAccessIntent(Intent intent) {
         }
     }
 
+    //For every action, user is prompt with a dialog,
+    //this functions builds and shows a generic message
     private void showMessage(String title, String msg){
         //Prepare message
         AlertDialog.Builder builder = new AlertDialog.Builder(
